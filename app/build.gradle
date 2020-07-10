@@ -1,0 +1,117 @@
+apply plugin: 'com.android.application'
+
+def getVersionCode() {// 获取版本号
+    def versionFile = file('version.properties')// 读取第一步新建的文件
+    if (versionFile.canRead()) {// 判断文件读取异常
+        Properties versionProps = new Properties()
+        versionProps.load(new FileInputStream(versionFile))
+        def versionCode = versionProps['VERSION_CODE'].toInteger()// 读取文件里面的版本号
+        def runTasks = gradle.startParameter.taskNames
+        if ('assembleRelease' in runTasks ) {
+//仅在assembleRelease任务是增加版本号,其他渠道包在此分别配置
+            // 版本号自增之后再写入文件（此处是关键，版本号自增+1）
+            versionProps['VERSION_CODE'] = (++versionCode).toString()
+            versionProps.store(versionFile.newWriter(), null)
+        }
+        return versionCode // 返回自增之后的版本号
+    } else {
+        throw new GradleException("Could not find version.properties!")
+    }
+}
+android {
+    compileSdkVersion 28
+    def currentVersionCode = getVersionCode();
+
+    //签名配置
+    signingConfigs {
+        debugConfig {
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+            storeFile file('../askey/hht.keystore')
+            storePassword "android"
+        }
+        releaseConfig {
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+            storeFile file('../askey/hht.keystore')
+            storePassword "android"
+        }
+        v811 {
+            keyAlias 'V811_android'
+            keyPassword 'V811_android'
+            storeFile file('../askey/V811_android.jks')
+            storePassword 'V811_android'
+        }
+    }
+    defaultConfig {
+        applicationId "com.newline.serialport"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode currentVersionCode
+        versionName "1.0.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.releaseConfig
+        }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debugConfig
+        }
+
+    }
+    sourceSets {
+        main {jni.srcDirs = []}
+    }
+
+
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+
+    //多渠道配置
+    flavorDimensions "default"
+    productFlavors{
+        mstar{
+            signingConfig signingConfigs.releaseConfig
+        }
+        v811{
+            signingConfig signingConfigs.v811
+        }
+
+    }
+
+    //打包后应用名称
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "SerialPort_${variant.productFlavors[0].name}.apk"
+        }
+    }
+
+
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation files('libs/HHTTools.jar')
+    implementation 'org.jetbrains:annotations-java5:15.0'
+    implementation 'com.hht.android:system.middleware:1.0.0'
+
+}

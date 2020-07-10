@@ -1,27 +1,22 @@
 package com.newline.serialport;
 
-import android.net.LocalServerSocket;
+
 import android.util.Log;
 
 
-import com.newline.serialport.chip.UniteImpl;
+
 import com.newline.serialport.utils.DataUtils;
-import com.newline.serialport.utils.SystemUtils;
-import com.hht.tools.log.SystemPropertiesValue;
-import com.newline.serialport.chip.UniteImpl;
-import com.newline.serialport.utils.DataUtils;
+
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
+
 
 import android_serialport_api.SerialPort;
 
-import static com.newline.serialport.HHTApplication.timeStamp;
-import static com.newline.serialport.HHTApplication.timeTotalStamp;
-import static com.newline.serialport.HHTApplication.totalCommander;
+
 
 /**
  * Created by WangChaowei on 2017/12/7.

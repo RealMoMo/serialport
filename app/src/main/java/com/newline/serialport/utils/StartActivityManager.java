@@ -8,13 +8,12 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 
 import com.hht.middleware.model.SourceValue;
-import com.newline.provider.lib.HHTSetting;
+
 import com.newline.serialport.SerialPortService;
 import com.hht.tools.invalid.NullObjects;
 import com.hht.tools.log.Logger;
 import com.hht.tools.log.SystemPropertiesValue;
-import com.newline.provider.lib.HHTSetting;
-import com.newline.serialport.SerialPortService;
+
 
 import java.lang.reflect.Method;
 
@@ -101,9 +100,7 @@ public class StartActivityManager {
 
         Intent i = new Intent();
         String packageName = (String) SystemPropertiesValue.getProperty("persist.hht.whiteboard","tw.com.hitevision.whiteboard");
-        if (SystemUtils.isYI()) {
-            packageName = "tw.com.newline.whiteboard";
-        }
+
         i.setClassName(packageName, packageName+".android.MainActivity");
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(i);
@@ -119,9 +116,7 @@ public class StartActivityManager {
 
         Intent i = new Intent();
         String packageName = (String) SystemPropertiesValue.getProperty("persist.hht.whiteboard","tw.com.hitevision.whiteboard");
-        if (SystemUtils.isYI()) {
-            packageName = "tw.com.newline.whiteboard";
-        }
+
         i.setClassName(packageName, packageName+".android.MainActivity");
         i.putExtra(KEY_TW_WHITEBOARD_FOR_ANNOTATION, true);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -173,32 +168,7 @@ public class StartActivityManager {
         context.startActivity(intent);
     }
 
-    public static void startConference(Context context) {
-        String packageName = null;
-        try {
-                packageName = HHTSetting.Other.getString(context.getContentResolver(), "conference_item");
-            Logger.i("packageName = "+ packageName);
-            Intent intent = new Intent("com.hht.action.ConferenceActivity");
-            intent.setPackage("com.android.settings");
-            if (packageName == null) {
-                Logger.i("start settings conference");
-                context.startActivity(intent);
-            } else {
-                PackageManager packageManager = context.getPackageManager();
-                Intent mLaunchIntent = packageManager.getLaunchIntentForPackage(packageName);
-                if (mLaunchIntent != null) {
-                    Logger.i("start settings conference  activity " + packageName);
-                    context.startActivity(mLaunchIntent);
-                } else {
-                    Logger.i("start settings conference");
-                    context.startActivity(intent);
-                }
-            }
-        } catch (Exception e) {
-            Logger.e(e);
-        }
 
-    }
 
     public static void startSettingsAbout(Context context) {
         Logger.i("启动 android.settings.DEVICE_INFO_SETTINGS");

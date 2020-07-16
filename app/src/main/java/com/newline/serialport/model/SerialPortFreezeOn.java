@@ -29,11 +29,9 @@ public class SerialPortFreezeOn extends SerialPortModel {
     public void action(Context context) {
 
         if (!SystemUtils.isFrozenScreen(context)) {//判断当前冻屏是关闭的，才需要打开
-            if (SystemUtils.isZ5()) {
-                StartActivityManager.openPause(context);
-            } else {
+
                 Sender.sendFreeze(context);
-            }
+
         }
     }
 }

@@ -22,15 +22,7 @@ public class SystemUtils {
     public static final String MIC_MUTE_STATUS = "mic_mute_status_flag";//静音 = 1 非静音 = 0
     private static final String SYS_IS_UPDATE = "persist.sys.is.update";//系统是否有更新
 
-    public static boolean isZ5() {
-        return SystemPropertiesUtils.getSysPlatforms().equals("Z5");
-    }
 
-    public static boolean isYI() {
-        String property = (String) com.hht.middleware.tools.log.SystemPropertiesValue.getProperty("persist.hht.Platforms2", "");
-        Logger.i("property = "+property);
-        return "YI_MS8386".equals(property);
-    }
     /**
      * 获取系统是否有更新
      *
@@ -196,35 +188,7 @@ public class SystemUtils {
         }
     }
 
-    public static void setHDMIEDID(int inputSource, int hdmiEdidVersion) {
-        TvCommonManager.getInstance().setHdmiEdidVersionBySource(inputSource, hdmiEdidVersion);
-    }
 
-    public static int getHDMIEDID(int inputSource) {
-       return TvCommonManager.getInstance().getHdmiEdidVersionBySource(inputSource);
-    }
-
-
-    private static final String KEY_OPS_STATUS = "persist.hht.OPS_status";
-    private static final String KEY_OPS_ON = "OPS_ON";
-    private static final String KEY_OPS_OFF = "OPS_OFF";
-    public static boolean isFakeShutDown() {
-        String opsStatus = (String) SystemPropertiesValue.getProperty(KEY_OPS_STATUS,KEY_OPS_OFF);
-        Logger.i("opsStatus = "+opsStatus);
-        return opsStatus.equals(KEY_OPS_ON);
-    }
-
-    public static void setFakeShutDown(boolean isFakeShutDown) {
-        SystemPropertiesValue.setProperty(KEY_OPS_STATUS, isFakeShutDown ? KEY_OPS_ON : KEY_OPS_OFF);
-    }
-
-
-    public static void resetAll(Context context, boolean saveLan) {
-        Logger.i("save Lan "+ saveLan);
-        if (saveLan) {
-        }
-        setFactory(context);
-    }
 
     public static final String ACTION_FACTORY_RESET = "android.intent.action.FACTORY_RESET";
     public static final String EXTRA_REASON = "android.intent.extra.REASON";
@@ -238,14 +202,6 @@ public class SystemUtils {
         context.sendBroadcast(intent);
     }
 
-    private static final String  STANDBY_STATUS_FLAG = "hht_standby";
-    public static boolean isStandbyOn(Context context) {
-        return Settings.Secure.getInt(context.getContentResolver(), STANDBY_STATUS_FLAG,0) == 1;//打开假待机
-    }
 
-    public static boolean isYISleep(Context context) {
-        String foregroundActivity = ProcessUtils.getForegroundActivity(context);
-        Logger.d("foregroundActivity = "+ foregroundActivity);
-        return isYI() && "com.hht.standby/com.hht.standby.MainActivity".equals(foregroundActivity);
-    }
+
 }

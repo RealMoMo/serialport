@@ -36,6 +36,13 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+
+        <provider
+            android:authorities="com.newline.serialport"
+            android:name="com.newline.serialport.dao.SerialPortContentProvider"
+            android:exported="true"
+            android:enabled="true"/>
     </application>
 
 </manifest>

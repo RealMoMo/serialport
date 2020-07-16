@@ -47,9 +47,6 @@ public class UniteImpl {
 
     }
 
-    public static boolean isOpsPlugged() {
-        return Mstar.isOpsPlugged();
-    }
 
     public static boolean isMicMute() {
 

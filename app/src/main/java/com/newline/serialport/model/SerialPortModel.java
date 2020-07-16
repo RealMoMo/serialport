@@ -9,13 +9,8 @@ public class SerialPortModel {
 
     private static String targetCode = "";
 
-
     //Set xx 未处理
     public static SerialPortModel getSerialPortModelByControllingCode(String controllingCode, int size) {
-        return getSerialPortModelByControllingCode(controllingCode, size, false);
-    }
-    //Set xx 未处理
-    public static SerialPortModel getSerialPortModelByControllingCode(String controllingCode, int size, boolean isYISleep) {
         char[] codes = controllingCode.toCharArray();
         Log.i("HWL", " targetCode codes[0] = "+codes[0]+"  codes[1] = "+codes[1]);
         if (codes[0] == '7' && codes[1] == 'F') {
@@ -30,9 +25,7 @@ public class SerialPortModel {
             }
         }
         Log.i("HWL", " targetCode "+targetCode);
-        if (isYISleep && !targetCode.equals(SerialPortYISleep.CONTROLLING_CODE)) {
-            return null;
-        }
+
         switch (targetCode) {
             case SerialPortPowerOff.CONTROLLING_CODE: {//发送关机广播
                 targetCode = "";
@@ -110,21 +103,9 @@ public class SerialPortModel {
                 targetCode = "";
                 return new SerialPortMicMuteOff();
             }
-            case SerialPortWOTMicMuteOn.CONTROLLING_CODE: {//lango 中间件
-                targetCode = "";
-                return new SerialPortWOTMicMuteOn();
-            }
-            case SerialPortWOTMicMuteOff.CONTROLLING_CODE: {//lango 中间件
-                targetCode = "";
-                return new SerialPortWOTMicMuteOff();
-            }
             case SerialPortMicMuteStatus.CONTROLLING_CODE: {//获取状态
                 targetCode = "";
                 return new SerialPortMicMuteStatus();
-            }
-            case SerialPortWOTMicMuteStatus.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortWOTMicMuteStatus();
             }
             case SerialPortMenu.CONTROLLING_CODE: {//发送KeyEvent.KEYCODE_MENU
                 targetCode = "";
@@ -230,50 +211,6 @@ public class SerialPortModel {
                 targetCode = "";
                 return new SerialPortSwitchBackLightOff();
             }
-            case SerialPortWOTCloseNewlineCast.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortWOTCloseNewlineCast();
-            }
-            case SerialPortWOTCloseNewlineBroadcast.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortWOTCloseNewlineBroadcast();
-            }
-            case SerialPortWOTActiveNewlineCast.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortWOTActiveNewlineCast();
-            }
-            case SerialPortWOTActiveNewlineBroadcast.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortWOTActiveNewlineBroadcast();
-            }
-            case SerialPortZ5ToolBarHide.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortZ5ToolBarHide();
-            }
-            case SerialPortZ5ToolBarAppear.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortZ5ToolBarAppear();
-            }
-            case SerialPortZ5CloseNewlineBroadcast.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortZ5CloseNewlineBroadcast();
-            }
-            case SerialPortZ5CloseNewlineCast.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortZ5CloseNewlineCast();
-            }
-            case SerialPortZ5EnableNewlineBroadcast.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortZ5EnableNewlineBroadcast();
-            }
-            case SerialPortZ5EnableNewlineCast.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortZ5EnableNewlineCast();
-            }
-            case SerialPortZ5ProceedFWUpdate.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortZ5ProceedFWUpdate();
-            }
             case SerialPortSpeaker.QUERYING_CODE: {//查询扬声器是否静音
                 targetCode = "";
                 return new SerialPortSpeaker();
@@ -302,26 +239,6 @@ public class SerialPortModel {
                 targetCode = "";
                 return new SerialPortOEMBTypec();
             }
-            case SerialPortYIConference.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortYIConference();
-            }
-            case SerialPortYISleep.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortYISleep();
-            }
-            case SerialPortYITask.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortYITask();
-            }
-            case SerialPortYIAutoVGA.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortYIAutoVGA();
-            }
-            case SerialPortYILockDown.CONTROLLING_CODE: {
-                targetCode = "";
-                return new SerialPortYILockDown();
-            }
             case SerialPortPowerRestart.CONTROLLING_CODE: {
                 targetCode = "";
                 return new SerialPortPowerRestart();
@@ -339,14 +256,6 @@ public class SerialPortModel {
                 return new SerialPortSetDisplayMode();
             }
         } else if (targetCode.length() > 32) {
-//            if (SerialPortOPSTOAndroid.isOPSTOAndroid(targetCode)) {
-//                char[] numberCodes = targetCode.toCharArray();
-//                if (numberCodes[numberCodes.length - 2] == 'C' && numberCodes[numberCodes.length - 1] == 'F') {
-//                    SerialPortOPSTOAndroid.HexString = targetCode;
-//                    targetCode = "";
-//                    return new SerialPortOPSTOAndroid();
-//                }
-//            } else
                 if (targetCode.contains(SerialPortSerialNumber.IDENTIFICATION_NUMBER)) {
                 char[] numberCodes = targetCode.toCharArray();
                 if (numberCodes[numberCodes.length - 2] == 'C' && numberCodes[numberCodes.length - 1] == 'F') {

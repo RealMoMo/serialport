@@ -18,13 +18,10 @@ import android_serialport_api.SerialPort;
 
 
 
-/**
- * Created by WangChaowei on 2017/12/7.
- */
 
 public class SerialPortUtils {
 
-    protected String TAG = "SerialPortUtils";
+    protected String TAG = "realmo";
     protected String path = "/dev/ttyS0";
     protected int baudrate = 19200;
     public boolean serialPortStatus = false; //是否打开串口标志
@@ -34,10 +31,7 @@ public class SerialPortUtils {
     public SerialPort serialPort = null;
     public InputStream inputStream = null;
     public OutputStream outputStream = null;
-//    public ChangeTool changeTool = new ChangeTool();
 
-    public void openUSBLocalSocket() {
-    }
 
     /**
      * 打开串口
@@ -177,7 +171,6 @@ public class SerialPortUtils {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < bytes.length; i++) {
             String hex = Integer.toHexString(0xFF & bytes[i]);
-//            Log.i("HWL", "bytes[i] = "+bytes[i] +"  i = "+i);
             if (hex.length() == 1) {
                 sb.append('0');
             }
@@ -188,8 +181,8 @@ public class SerialPortUtils {
 
     //这是写了一监听器来监听接收数据
     public OnDataReceiveListener onDataReceiveListener = null;
-    public static interface OnDataReceiveListener {
-        public void onDataReceive(byte[] buffer, int size);
+    public interface OnDataReceiveListener {
+        void onDataReceive(byte[] buffer, int size);
     }
     public void setOnDataReceiveListener(OnDataReceiveListener dataReceiveListener) {
         onDataReceiveListener = dataReceiveListener;

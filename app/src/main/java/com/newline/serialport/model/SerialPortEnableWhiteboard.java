@@ -22,9 +22,7 @@ public class SerialPortEnableWhiteboard extends SerialPortModel {
     @Override
     public void action(Context context) {
         String packageName = (String) SystemPropertiesValue.getProperty("persist.hht.whiteboard","tw.com.hitevision.whiteboard");
-        if (SystemUtils.isYI()) {
-            packageName = "tw.com.newline.whiteboard";
-        }
+
         Logger.i("packageName = "+ packageName);
         if (SystemUtils.isPkgInstalled(context, packageName)) {
             StartActivityManager.startTWWhiteboard(context);

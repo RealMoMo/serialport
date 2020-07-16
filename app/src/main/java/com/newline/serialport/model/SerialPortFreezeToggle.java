@@ -27,10 +27,8 @@ public class SerialPortFreezeToggle extends SerialPortModel {
 
     @Override
     public void action(Context context) {
-        if (SystemUtils.isZ5()) {
-            StartActivityManager.openPause(context);
-        } else {
+
             Sender.sendFreeze(context);
-        }
+
     }
 }

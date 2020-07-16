@@ -73,12 +73,7 @@ public class SerialPortCurrentSignalSource extends SerialPortModel {
                 case SourceValue.VGA_ORDINAL:sourceHexStr = "00";break;
                 case SourceValue.FRONT_ORDINAL:sourceHexStr = "19";break;
                 case SourceValue.TYPEC_ORDINAL:
-                    if (SystemUtils.isZ5()) {
-                        sourceHexStr = "18";
-                    } else {
                         sourceHexStr = "22";
-                    }
-
                     break;
                 default:sourceHexStr = "30";break;
             }

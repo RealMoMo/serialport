@@ -1,42 +1,38 @@
 package com.newline.serialport;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
+
 
 import com.hht.middleware.model.SourceValue;
 import com.hht.middleware.tools.SystemPropertiesUtils;
 import com.newline.serialport.chip.UniteImpl;
+import com.newline.serialport.dao.observer.SerialPortContentObserver;
 import com.newline.serialport.model.SerialPortModel;
-import com.newline.serialport.ops.OnReSendSerialPortListener;
-import com.newline.serialport.utils.Sender;
-import com.newline.serialport.utils.StartActivityManager;
+import com.newline.serialport.setting.HHTDeviceManager;
+import com.newline.serialport.setting.i.StandardDeviceStatusListener;
 import com.newline.serialport.utils.SystemUtils;
-import com.hht.tools.log.LogIntent;
 import com.hht.tools.log.Logger;
 
 
 import org.jetbrains.annotations.Nullable;
 
-import android_serialport_api.SerialPort;
 
-public class SerialPortService extends Service {
-    SerialPortUtils serialPortUtils = new SerialPortUtils();
-    OPSSerialUtils mOPSSerialUtils = new OPSSerialUtils();
+public class SerialPortService extends Service implements SerialPortContentObserver.SerialPortDAOChangeListener, StandardDeviceStatusListener {
+
+    private SerialPortUtils serialPortUtils = new SerialPortUtils();
 
     private byte[] mBuffer;
     private Handler handler = new Handler();
 
     private String s;
-    UARTListenerThread mUARTListenerThread = new UARTListenerThread();
+    private UARTListenerThread mUARTListenerThread = new UARTListenerThread();
 
+    private SerialPortContentObserver serialPortContentObserver;
+    private HHTDeviceManager hhtDeviceManager;
 
     @Nullable
     @Override
@@ -48,15 +44,33 @@ public class SerialPortService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        Logger.i(" create serialPort " +this.getApplicationInfo().nativeLibraryDir);
-//        mUARTListenerThread.start();
+        initSerialPort();
+        initSerialPortDAOListener();
+        initStandardAndroidStatusListener();
 
-        if (SourceValue.isMS848() || !"".equals(SystemPropertiesUtils.getSysPlatforms())) {
-            openSerialPortByUARTOnOff();
-        } else {
-            openSerialPort();
-        }
-//        mVoiceLocalServerSocket.openSocket();
+    }
+
+    /**
+     * 监听Android标准平台 通用状态变化
+     */
+    private void initStandardAndroidStatusListener() {
+        hhtDeviceManager = new HHTDeviceManager(this);
+        hhtDeviceManager.setOnStandardDeviceStatusListener(this);
+    }
+
+    /**
+     * 监听SerialPortContentProvider 数据变化
+     */
+    private void initSerialPortDAOListener() {
+        serialPortContentObserver = SerialPortContentObserver.getInstance();
+        serialPortContentObserver.addSerialPortContentObserver(this);
+    }
+
+    private void initSerialPort() {
+        //TODO realmo 判断串口是否打开
+       openSerialPortByUARTOnOff();
+       openSerialPort();
+
 
         //串口数据监听事件
         serialPortUtils.setOnDataReceiveListener(new SerialPortUtils.OnDataReceiveListener() {
@@ -64,16 +78,11 @@ public class SerialPortService extends Service {
             public void onDataReceive(byte[] buffer, int size) {
 
                 s = SerialPortUtils.bytesToHexString(buffer);
-
-                Log.d("SerialPortService", "进入数据监听事件中。。。" + s);
-                //
-                //在线程中直接操作UI会报异常：ViewRootImpl$CalledFromWrongThreadException
-                //解决方法：handler
-                //
+                Log.d("realmo","serialport content:"+s);
                 mBuffer = buffer;
                 String partOffCodes = SerialPortUtils.bytesToHexString(mBuffer).toUpperCase();
-                SerialPortModel serialPortModel = SerialPortModel.getSerialPortModelByControllingCode(partOffCodes, size, SystemUtils.isYISleep(SerialPortService.this));
-                Log.i("SerialPortService"," serialPortModel = "+serialPortModel);
+                SerialPortModel serialPortModel = SerialPortModel.getSerialPortModelByControllingCode(partOffCodes, size);
+
                 if (serialPortModel != null) {
                     serialPortModel.action(SerialPortService.this);
 
@@ -88,31 +97,11 @@ public class SerialPortService extends Service {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    Logger.i("size："+ String.valueOf(mBuffer.length)+"数据监听："+ s);
+                    Logger.i("size："+ mBuffer.length+"数据监听："+ s);
                 }
             };
         });
-
-        mOPSSerialUtils.setOnDataReceiveListener(new SerialPortUtils.OnDataReceiveListener() {
-            @Override
-            public void onDataReceive(byte[] buffer, int size) {
-
-                mBuffer = buffer;
-                handler.post(runnable);
-            }
-            //开线程更新UI
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-//                    Logger.i("mOPSSerial size："+ String.valueOf(mBuffer.length)+"数据监听："+ s.substring(0, 128));
-                }
-            };
-        });
-
     }
-
-
-
 
 
     private void openSerialPort() {
@@ -122,19 +111,11 @@ public class SerialPortService extends Service {
             if (serialPortUtils.serialPortStatus) {
                 serialPortUtils.closeSerialPort();
             }
-            if (mOPSSerialUtils.serialPortStatus) {
-                mOPSSerialUtils.closeSerialPort();
-            }
 
         } else {
             if (!serialPortUtils.serialPortStatus) {
                 serialPortUtils.openSerialPort();
             }
-
-            if (!mOPSSerialUtils.serialPortStatus) {
-                mOPSSerialUtils.openSerialPort();
-            }
-
 
         }
     }
@@ -149,9 +130,7 @@ public class SerialPortService extends Service {
                 if (serialPortUtils.serialPortStatus) {
                     serialPortUtils.closeSerialPort();
                 }
-                if (mOPSSerialUtils.serialPortStatus) {
-                    mOPSSerialUtils.closeSerialPort();
-                }
+
 
             } else {
 
@@ -159,14 +138,30 @@ public class SerialPortService extends Service {
                     serialPortUtils.openSerialPort();
                 }
 
-                if (!mOPSSerialUtils.serialPortStatus) {
-                    mOPSSerialUtils.openSerialPort();
-                }
-
             }
         } catch (Exception e) {
             Logger.e(e);
         }
+    }
+
+    @Override
+    public void getKeyEvent(int keycode) {
+        //TODO realmo send event to ops
+    }
+
+    @Override
+    public void onMuteChange(boolean mute) {
+        //TODO realmo send mute status to ops
+    }
+
+    @Override
+    public void onVolumeChange(int value) {
+        //TODO realmo send volume to ops
+    }
+
+    @Override
+    public void onBrightnessChange(int value) {
+        //TODO realmo send brightness to ops
     }
 
     public class UARTListenerThread extends Thread {
@@ -189,11 +184,13 @@ public class SerialPortService extends Service {
     public void onDestroy() {
         super.onDestroy();
         serialPortUtils.closeSerialPort();
-        mOPSSerialUtils.closeSerialPort();
 
         if (mUARTListenerThread != null) {
             mUARTListenerThread.interrupt();
             mUARTListenerThread = null;
         }
+
+        serialPortContentObserver.removeSerialPortContentObserver(this);
+        serialPortContentObserver.release();
     }
 }

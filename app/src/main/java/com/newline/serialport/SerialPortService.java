@@ -5,16 +5,14 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.KeyEvent;
 
 
-import com.hht.middleware.model.SourceValue;
-import com.hht.middleware.tools.SystemPropertiesUtils;
 import com.newline.serialport.chip.UniteImpl;
 import com.newline.serialport.dao.observer.SerialPortContentObserver;
-import com.newline.serialport.model.SerialPortModel;
+import com.newline.serialport.model.recevier.SerialPortModel;
 import com.newline.serialport.setting.HHTDeviceManager;
 import com.newline.serialport.setting.i.StandardDeviceStatusListener;
-import com.newline.serialport.utils.SystemUtils;
 import com.hht.tools.log.Logger;
 
 
@@ -22,6 +20,8 @@ import org.jetbrains.annotations.Nullable;
 
 
 public class SerialPortService extends Service implements SerialPortContentObserver.SerialPortDAOChangeListener, StandardDeviceStatusListener {
+
+    private static String TAG = "newlinePort";
 
     private SerialPortUtils serialPortUtils = new SerialPortUtils();
 
@@ -62,14 +62,14 @@ public class SerialPortService extends Service implements SerialPortContentObser
      * 监听SerialPortContentProvider 数据变化
      */
     private void initSerialPortDAOListener() {
-        serialPortContentObserver = SerialPortContentObserver.getInstance();
+        serialPortContentObserver = SerialPortContentObserver.getInstance(this);
         serialPortContentObserver.addSerialPortContentObserver(this);
     }
 
     private void initSerialPort() {
         //TODO realmo 判断串口是否打开
-       openSerialPortByUARTOnOff();
-       openSerialPort();
+//       openSerialPortByUARTOnOff();
+//       openSerialPort();
 
 
         //串口数据监听事件
@@ -147,6 +147,24 @@ public class SerialPortService extends Service implements SerialPortContentObser
     @Override
     public void getKeyEvent(int keycode) {
         //TODO realmo send event to ops
+        Log.d(TAG,"keycode:"+keycode);
+
+        switch (keycode){
+            case KeyEvent.KEYCODE_0:
+            case KeyEvent.KEYCODE_1:
+            case KeyEvent.KEYCODE_2:
+            case KeyEvent.KEYCODE_3:
+            case KeyEvent.KEYCODE_4:
+            case KeyEvent.KEYCODE_5:
+            case KeyEvent.KEYCODE_6:
+            case KeyEvent.KEYCODE_7:
+            case KeyEvent.KEYCODE_8:
+            case KeyEvent.KEYCODE_9:
+            default:{
+
+            }break;
+        }
+
     }
 
     @Override
@@ -161,7 +179,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
 
     @Override
     public void onBrightnessChange(int value) {
-        //TODO realmo send brightness to ops
+        //TODO do nothing
     }
 
     public class UARTListenerThread extends Thread {

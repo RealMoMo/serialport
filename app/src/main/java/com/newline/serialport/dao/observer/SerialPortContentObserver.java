@@ -1,9 +1,11 @@
 package com.newline.serialport.dao.observer;
 
+import android.content.Context;
 import android.database.ContentObserver;
 import android.os.Handler;
 
 import com.newline.serialport.dao.KeyEventDAO;
+import com.newline.serialport.dao.SerialPortDAO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,15 +31,19 @@ public class SerialPortContentObserver extends ContentObserver {
 
     private static SerialPortContentObserver mInstance;
     private static Handler mHandler;
+    private static Context applicationContext;
 
     private List<SerialPortDAOChangeListener> observerList;
 
-    public static SerialPortContentObserver getInstance(){
+
+    public static SerialPortContentObserver getInstance(Context context){
         if(mInstance == null){
             synchronized (SerialPortContentObserver.class){
                 if(mInstance == null){
+                    applicationContext = context.getApplicationContext();
                     mHandler = new Handler();
                     mInstance = new SerialPortContentObserver(mHandler);
+                    applicationContext.getContentResolver().registerContentObserver(SerialPortDAO.SERIAL_PORT_URI,true,mInstance);
                 }
             }
         }
@@ -57,9 +63,12 @@ public class SerialPortContentObserver extends ContentObserver {
      * 释放资源
      */
     public void release(){
+        applicationContext.getContentResolver().unregisterContentObserver(mInstance);
         observerList.clear();
         mHandler.removeCallbacksAndMessages(null);
         mHandler = null;
+        applicationContext = null;
+        mInstance = null;
     }
 
 

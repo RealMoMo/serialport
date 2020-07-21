@@ -5,10 +5,6 @@ import com.hht.tools.log.Logger;
 
 
 public class UniteImpl {
-    public static final String PATH_SP = "/dev/ttyAMA1";
-    public static final String PATH_OPS = "/dev/ttyAMA0";
-
-
 
     public static boolean isMute() {
 
@@ -47,12 +43,6 @@ public class UniteImpl {
 
     }
 
-
-    public static boolean isMicMute() {
-
-            return Mstar.isMicMute();
-
-    }
 
     public static String getEnvironment() {
             return Mstar.getEnvironment();

@@ -4,13 +4,10 @@ import android.content.Context;
 import android.provider.Settings;
 
 import com.hht.middleware.command.CommandConstant;
-import com.newline.serialport.VoiceSerialUtils;
 import com.hht.tools.log.Logger;
 import com.mstar.android.tvapi.common.TvManager;
-import com.mstar.android.tvapi.common.exception.TvCommonException;
 import com.mstar.android.tvapi.common.vo.EnumMuteStatusType;
 
-import static com.newline.serialport.VoiceSerialUtils.bEnableMic;
 
 public class Mstar {
 
@@ -54,28 +51,6 @@ public class Mstar {
         return false;
     }
 
-
-
-    //#define  GPIO_MIC_MUTE_LED       281
-    private static final int GPIO_MIC_MUTE = 281;
-    //1 mute
-    //0 unmute
-    public static boolean isMicMute() {
-        short[] shorts = new short[0];
-        try {
-//            shorts = TvManager.getInstance().setTvosCommonCommand("GetMicroPhoneStatus");
-//            Logger.i("shorts = "+shorts);
-//            String cmd = shorts[0] == 0 ? "SetMicroPhoneMute" : "SetMicroPhoneUnmute";
-            boolean isMute = false;
-            boolean isRed = isMute = !VoiceSerialUtils.bEnableMic;
-            Logger.i("isRed = "+ isRed);
-            TvManager.getInstance().setGpioDeviceStatus(GPIO_MIC_MUTE, isRed);
-            return isMute;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
 
     public static String getEnvironment() {
         try {

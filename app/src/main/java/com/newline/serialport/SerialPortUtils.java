@@ -22,7 +22,7 @@ import android_serialport_api.SerialPort;
 public class SerialPortUtils {
 
     protected String TAG = "realmo";
-    protected String path = "/dev/ttyS0";
+    protected String path = "/dev/ttyAMA4";
     protected int baudrate = 19200;
     public boolean serialPortStatus = false; //是否打开串口标志
     public String data_;

@@ -12,12 +12,23 @@ import com.newline.serialport.SerialPortUtils;
  */
 public class VolumeSendModel extends SendSerialPortModel {
 
-    public VolumeSendModel(SerialPortUtils serialPort) {
+    private int volume;
+    private String volumeHexStr;
+    //XX为音量值 范围0-100对应的16进制值
+    private String sendContent = "7F 09 99 A2 B3 C4 02 FF 05 XX 01 CF";
+
+    public VolumeSendModel(SerialPortUtils serialPort,int currentVolume) {
         super(serialPort);
+        volume = currentVolume;
+        volumeHexStr = Integer.toHexString(volume);
+        if(volumeHexStr.length() == 1){
+            volumeHexStr = "0"+volumeHexStr;
+        }
     }
 
     @Override
     String getSendContent() {
-        return null;
+
+        return sendContent.replace("XX", volumeHexStr);
     }
 }

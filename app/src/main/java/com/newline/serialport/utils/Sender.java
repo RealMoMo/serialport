@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.view.KeyEvent;
 
 import com.hht.middleware.model.SourceValue;
-import com.newline.serialport.chip.UniteImpl;
 import com.hht.tools.device.ProcessUtils;
 import com.hht.tools.log.Logger;
 import com.hht.tools.log.SystemPropertiesValue;

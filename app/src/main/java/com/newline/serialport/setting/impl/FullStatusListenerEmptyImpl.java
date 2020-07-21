@@ -41,4 +41,6 @@ public class FullStatusListenerEmptyImpl implements FullStatusListener {
     public void onBrightnessChange(int value) {
 
     }
+
+
 }

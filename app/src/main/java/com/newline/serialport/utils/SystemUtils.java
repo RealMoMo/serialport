@@ -8,12 +8,10 @@ import android.os.PowerManager;
 import android.provider.Settings;
 
 import com.hht.middleware.model.SourceValue;
-import com.hht.middleware.tools.SystemPropertiesUtils;
-import com.newline.serialport.chip.UniteImpl;
 import com.hht.tools.device.ProcessUtils;
 import com.hht.tools.log.Logger;
 import com.hht.tools.log.SystemPropertiesValue;
-import com.mstar.android.tv.TvCommonManager;
+
 
 import java.lang.reflect.Method;
 
@@ -122,18 +120,6 @@ public class SystemUtils {
         return volume;
     }
 
-    public static boolean is848Mute(Context context) {
-        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        return audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) == 0;
-    }
-
-    public static boolean isMute(Context context) {
-        if (SourceValue.isMS848() ) {
-            return is848Mute(context);
-        }
-
-        return UniteImpl.isMute();
-    }
 
     public static void setMute(Context context, boolean mute) {
         Class<?> c = null;

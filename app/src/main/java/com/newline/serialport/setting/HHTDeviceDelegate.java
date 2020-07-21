@@ -317,6 +317,10 @@ public abstract class HHTDeviceDelegate implements ReleaseRes {
 
     abstract boolean isMicOff();
 
+    abstract void setMicMute(boolean mute);
+
+    abstract boolean isMicMute();
+
     abstract void updateSystemPrepare();
 
     abstract String getPowerOSource();

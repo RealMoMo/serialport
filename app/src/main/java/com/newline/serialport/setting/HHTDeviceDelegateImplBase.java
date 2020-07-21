@@ -779,6 +779,16 @@ abstract  class HHTDeviceDelegateImplBase extends HHTDeviceDelegate {
     }
 
     @Override
+    void setMicMute(boolean mute) {
+        mAudiomanager.setMicrophoneMute(mute);
+    }
+
+    @Override
+    boolean isMicMute() {
+        return mAudiomanager.isMicrophoneMute();
+    }
+
+    @Override
     void updateSystemPrepare() {
 
     }

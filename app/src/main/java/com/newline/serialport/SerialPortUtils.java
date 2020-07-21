@@ -23,9 +23,8 @@ public class SerialPortUtils {
 
     protected String TAG = "realmo";
     protected String path = "/dev/ttyAMA4";
-    protected int baudrate = 19200;
+    protected int baudrate = 115200;
     public boolean serialPortStatus = false; //是否打开串口标志
-    public String data_;
     public boolean threadStatus; //线程状态，为了安全终止线程
 
     public SerialPort serialPort = null;
@@ -46,7 +45,8 @@ public class SerialPortUtils {
             //获取打开的串口中的输入输出流，以便于串口数据的收发
             inputStream = serialPort.getInputStream();
             outputStream = serialPort.getOutputStream();
-
+            Log.d(TAG,"inputStream:"+(inputStream==null));
+            Log.d(TAG,"outputStream:"+(outputStream==null));
             new ReadThread().start(); //开始线程监控是否有数据要接收
         } catch (IOException e) {
             Log.e(TAG, "openSerialPort: 打开串口异常：" + e.toString());
@@ -79,22 +79,16 @@ public class SerialPortUtils {
      * @param data String数据指令
      */
     public void sendSerialPort(String data){
-        Log.d(TAG, "sendSerialPort: 发送数据");
+        Log.d(TAG, "sendSerialPort: 发送数据:"+data.replace(" ", ""));
 
         try {
             byte[] sendData = DataUtils.toBytes(data.replace(" ", ""));
-            this.data_ = new String(sendData); //byte[]转string
             if (sendData.length > 0) {
                 outputStream.write(sendData);
-//                outputStream.write('\n');
-                //outputStream.write('\r'+'\n');
                 outputStream.flush();
-                long temp = System.currentTimeMillis();
-                HHTApplication.totalCommander++;
-                Log.d(TAG, "sendSerialPort: 串口数据发送成功"+ temp+"("+(temp - HHTApplication.timeStamp)+"ms)"+"("+(temp - HHTApplication.timeTotalStamp)+"ms)"+"("+ HHTApplication.totalCommander+"次)");
-                if (this.data_.contains("AF A1")) {
-                    HHTApplication.timeTotalStamp = 0;
-                }
+
+                Log.d(TAG,""+sendData);
+                Log.d(TAG,"byte to string:"+SerialPortUtils.bytesToHexString(sendData).toUpperCase());
             }
         } catch (IOException e) {
             Log.e(TAG, "sendSerialPort: 串口数据发送失败："+e.toString());
@@ -109,7 +103,6 @@ public class SerialPortUtils {
         Log.d(TAG, "sendSerialPort: 发送数据");
 
         try {
-            this.data_ = new String(sendData); //byte[]转string
             if (sendData.length > 0) {
                 outputStream.write(sendData);
                 outputStream.flush();
@@ -135,7 +128,6 @@ public class SerialPortUtils {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                Log.d(TAG, "进入线程run" + HHTApplication.timeStamp);
                 //64   1024
                 byte[] buffer = new byte[64];
                 int size; //读取数据的大小
@@ -145,10 +137,6 @@ public class SerialPortUtils {
                         Log.d(TAG, "run: 接收到了数据：" + bytesToHexString(buffer));
                         Log.d(TAG, "run: 接收到了数据大小：" + String.valueOf(size));
 
-                        if (HHTApplication.timeTotalStamp == 0) {
-                            HHTApplication.timeTotalStamp = System.currentTimeMillis();
-                        }
-                        HHTApplication.timeStamp = System.currentTimeMillis();
                         if (onDataReceiveListener != null) {
                             onDataReceiveListener.onDataReceive(buffer, size);
                         }

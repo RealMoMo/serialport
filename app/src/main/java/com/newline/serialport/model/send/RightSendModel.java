@@ -10,14 +10,14 @@ import com.newline.serialport.SerialPortUtils;
  * @time 2020/7/20 17:38
  * @describe
  */
-public class NumberSendModel extends SendSerialPortModel {
+public class RightSendModel extends SendSerialPortModel {
 
-    public NumberSendModel(SerialPortUtils serialPort) {
+    public RightSendModel(SerialPortUtils serialPort) {
         super(serialPort);
     }
 
     @Override
     String getSendContent() {
-        return null;
+        return "7F 09 99 A2 B3 C4 02 FF 15 01 01 CF";
     }
 }

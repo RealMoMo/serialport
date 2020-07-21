@@ -26,4 +26,5 @@ public class StandardDeviceListenerEmptyImpl implements StandardDeviceStatusList
     public void onBrightnessChange(int value) {
 
     }
+
 }

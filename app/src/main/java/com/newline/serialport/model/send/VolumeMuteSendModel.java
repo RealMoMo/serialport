@@ -11,12 +11,20 @@ import com.newline.serialport.SerialPortUtils;
  * @describe
  */
 public class VolumeMuteSendModel extends SendSerialPortModel {
-    public VolumeMuteSendModel(SerialPortUtils serialPort) {
+
+    private boolean mute;
+
+    //XX: 00==mute 01==unmute
+    private String sendContent = "7F 09 99 A2 B3 C4 02 FF 39 XX 01 CF";
+
+    public VolumeMuteSendModel(SerialPortUtils serialPort,boolean isMute) {
         super(serialPort);
+        mute = isMute;
+
     }
 
     @Override
     String getSendContent() {
-        return null;
+        return sendContent.replace("XX",mute?"00":"01");
     }
 }

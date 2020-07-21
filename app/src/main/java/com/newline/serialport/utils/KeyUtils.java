@@ -3,7 +3,7 @@ package com.newline.serialport.utils;
 import android.app.Instrumentation;
 import android.view.KeyEvent;
 
-import com.newline.serialport.chip.UniteImpl;
+
 import com.hht.tools.log.Logger;
 
 public class KeyUtils {

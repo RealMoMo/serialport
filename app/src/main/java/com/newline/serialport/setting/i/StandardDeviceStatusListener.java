@@ -10,7 +10,7 @@ package com.newline.serialport.setting.i;
  */
 public interface StandardDeviceStatusListener extends BaseDeviceStatusListener{
     /**
-     * 静音状态变化
+     * 音量静音状态变化
      * @param mute 是否静音
      */
     void onMuteChange(boolean mute);
@@ -26,5 +26,7 @@ public interface StandardDeviceStatusListener extends BaseDeviceStatusListener{
      * @param value  当前亮度
      */
     void onBrightnessChange(int value);
+
+
 
 }

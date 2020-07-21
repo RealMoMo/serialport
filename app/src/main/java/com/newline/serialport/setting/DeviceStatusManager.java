@@ -51,8 +51,6 @@ final class DeviceStatusManager implements ProxyDeviceListener, ReleaseRes {
             hhtDeviceObservable.registerObserver(new MuteV21Observer(mContext));
             hhtDeviceObservable.registerObserver(new VolumeMstarV21Observer(mContext));
         }
-
-
     }
 
     void setHhtDeviceStatusListener(HHTDeviceStatusListener hhtDeviceStatusListener) {
@@ -95,6 +93,7 @@ final class DeviceStatusManager implements ProxyDeviceListener, ReleaseRes {
         standardDeviceStatusListener.onBrightnessChange(hhtDeviceDelegate.getBright());
 
     }
+
 
     private void checkListernNotNull(BaseDeviceStatusListener listener){
         if(listener == null){

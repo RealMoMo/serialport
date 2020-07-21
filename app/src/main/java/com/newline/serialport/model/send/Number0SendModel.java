@@ -7,16 +7,17 @@ import com.newline.serialport.SerialPortUtils;
  * @version 1.0.0
  * @name serialport
  * @email momo.weiye@gmail.com
- * @time 2020/7/20 17:40
+ * @time 2020/7/20 17:38
  * @describe
  */
-public class MicVolumeSendModel extends SendSerialPortModel {
-    public MicVolumeSendModel(SerialPortUtils serialPort) {
+public class Number0SendModel extends SendSerialPortModel {
+
+    public Number0SendModel(SerialPortUtils serialPort) {
         super(serialPort);
     }
 
     @Override
     String getSendContent() {
-        return null;
+        return "7F 09 99 A2 B3 C4 02 FF 15 40 01 CF";
     }
 }

@@ -76,11 +76,18 @@ public class SerialPortService extends Service implements SerialPortContentObser
         initStandardAndroidStatusListener();
         initV811PlatformStatusListener();
 
-        //TODO sync status to ops
+        initPersistenceStatus();
+
+    }
+
+    /**
+     * 初始化设备持久化状态信息
+     */
+    private void initPersistenceStatus() {
         persisentStatus = PersisentStatus.getInstance();
         persisentStatus.volume = hhtDeviceManager.getVolume();
         persisentStatus.volumeMute = hhtDeviceManager.getMuteStatus();
-        //persisentStatus.micMute = !IstEventManager.getInstance().isMirPhoneOpen();
+        persisentStatus.micMute = !IstEventManager.getInstance().isMirPhoneOpen();
     }
 
     /**

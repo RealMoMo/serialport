@@ -24,6 +24,6 @@ public class V811MicUnMuteRecevierModel extends RecevierSerialPortModel {
 
     @Override
     public void action() {
-        IstEventManager.getInstance().setMirPhone(false);
+        IstEventManager.getInstance().setMirPhone(true);
     }
 }

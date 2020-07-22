@@ -8,13 +8,16 @@ import android.util.Log;
 import android.view.KeyEvent;
 
 
-
+import com.ist.android.tv.IstEventManager;
+import com.newline.serialport.broadcast.V811MicMuteBroadcast;
 import com.newline.serialport.dao.observer.SerialPortContentObserver;
-import com.newline.serialport.model.recevier.SerialPortModel;
+import com.newline.serialport.model.PersisentStatus;
+import com.newline.serialport.model.recevier.RecevierSerialPortModel;
 import com.newline.serialport.model.send.DelSendModel;
 import com.newline.serialport.model.send.DownSendModel;
 import com.newline.serialport.model.send.EnterSendModel;
 import com.newline.serialport.model.send.LeftSendModel;
+import com.newline.serialport.model.send.MicMuteSendModel;
 import com.newline.serialport.model.send.Number0SendModel;
 import com.newline.serialport.model.send.Number1SendModel;
 import com.newline.serialport.model.send.Number2SendModel;
@@ -28,19 +31,20 @@ import com.newline.serialport.model.send.Number9SendModel;
 import com.newline.serialport.model.send.RightSendModel;
 import com.newline.serialport.model.send.SendSerialPortModel;
 import com.newline.serialport.model.send.UpSendModel;
+import com.newline.serialport.model.send.VolumeMuteSendModel;
+import com.newline.serialport.model.send.VolumeSendModel;
 import com.newline.serialport.model.send.ZoomInSendModel;
 import com.newline.serialport.model.send.ZoomOutSendModel;
 import com.newline.serialport.setting.HHTDeviceManager;
 import com.newline.serialport.setting.i.StandardDeviceStatusListener;
-import com.hht.tools.log.Logger;
 
 
 import org.jetbrains.annotations.Nullable;
 
 
-public class SerialPortService extends Service implements SerialPortContentObserver.SerialPortDAOChangeListener, StandardDeviceStatusListener {
+public class SerialPortService extends Service implements SerialPortContentObserver.SerialPortDAOChangeListener, StandardDeviceStatusListener, V811MicMuteBroadcast.MicStatusListener {
 
-//    private static String TAG = "newlinePort";
+    //    private static String TAG = "newlinePort";
     private static String TAG = "realmo";
 
     private SerialPortUtils serialPortUtils = new SerialPortUtils();
@@ -48,11 +52,14 @@ public class SerialPortService extends Service implements SerialPortContentObser
     private byte[] mBuffer;
     private Handler handler = new Handler();
 
-    private String s;
-    //private UARTListenerThread mUARTListenerThread = new UARTListenerThread();
-
     private SerialPortContentObserver serialPortContentObserver;
     private HHTDeviceManager hhtDeviceManager;
+
+    private V811MicMuteBroadcast v811MicMuteBroadcast;
+
+    private boolean selfChange = false;
+
+    private PersisentStatus persisentStatus;
 
     @Nullable
     @Override
@@ -67,7 +74,21 @@ public class SerialPortService extends Service implements SerialPortContentObser
         initSerialPortListener();
         initSerialPortDAOListener();
         initStandardAndroidStatusListener();
+        initV811PlatformStatusListener();
 
+        //TODO sync status to ops
+        persisentStatus = PersisentStatus.getInstance();
+        persisentStatus.volume = hhtDeviceManager.getVolume();
+        persisentStatus.volumeMute = hhtDeviceManager.getMuteStatus();
+        //persisentStatus.micMute = !IstEventManager.getInstance().isMirPhoneOpen();
+    }
+
+    /**
+     * 监听V811平台 部分特殊功能状态变化
+     */
+    private void initV811PlatformStatusListener() {
+        v811MicMuteBroadcast = new V811MicMuteBroadcast(this);
+        this.registerReceiver(v811MicMuteBroadcast, v811MicMuteBroadcast.getIntentFilter());
     }
 
     /**
@@ -87,10 +108,8 @@ public class SerialPortService extends Service implements SerialPortContentObser
     }
 
     private void initSerialPortListener() {
-        //TODO realmo 判断串口是否打开
-//       openSerialPortByUARTOnOff();
 
-        //TODO temp 直接开启
+        //TODO temp 直接开启，应该需判断uart口状态
         serialPortUtils.openSerialPort();
 
 
@@ -99,54 +118,32 @@ public class SerialPortService extends Service implements SerialPortContentObser
             @Override
             public void onDataReceive(byte[] buffer, int size) {
 
-                s = SerialPortUtils.bytesToHexString(buffer);
-                Log.d("realmo", "serialport content:" + s);
+
                 mBuffer = buffer;
-                String partOffCodes = SerialPortUtils.bytesToHexString(mBuffer).toUpperCase();
-                Log.d("realmo", "content:" + partOffCodes);
-                SerialPortModel serialPortModel = SerialPortModel.getSerialPortModelByControllingCode(partOffCodes, size);
+                String content = SerialPortUtils.bytesToHexString(mBuffer).toUpperCase();
+                Log.d(TAG, "receiver content:" + content);
+                RecevierSerialPortModel recevierSerialPortModel = RecevierSerialPortModel.getSerialPortModelByControllingCode(content, size, hhtDeviceManager);
 
-                if (serialPortModel != null) {
-                    serialPortModel.action(SerialPortService.this);
-
-                    String code = serialPortModel.getReturnCode();
-                    if(code != null){
-                        serialPortUtils.sendSerialPort(code);
-                    }
-
+                if(recevierSerialPortModel !=null){
+                    selfChange = true;
+                    recevierSerialPortModel.action();
                 }
+
+//                if (recevierSerialPortModel != null) {
+//                    recevierSerialPortModel.action(SerialPortService.this);
+//
+//                    String code = recevierSerialPortModel.getReturnCode();
+//                    if(code != null){
+//                        serialPortUtils.sendSerialPort(code);
+//                    }
+//
+//                }
             }
         });
     }
 
-
-    //根据Uart打开串口
-    private void openSerialPortByUARTOnOff() {
-        try {
-            boolean isOn = false;
-            Logger.i("isOn = " + isOn);
-            if (isOn) {
-
-                if (serialPortUtils.serialPortStatus) {
-                    serialPortUtils.closeSerialPort();
-                }
-
-
-            } else {
-
-                if (!serialPortUtils.serialPortStatus) {
-                    serialPortUtils.openSerialPort();
-                }
-
-            }
-        } catch (Exception e) {
-            Logger.e(e);
-        }
-    }
-
     @Override
     public void getKeyEvent(int keycode) {
-        Log.d(TAG, "keycode:" + keycode);
         SendSerialPortModel sendModel = null;
         switch (keycode) {
             case KeyEvent.KEYCODE_0: {
@@ -227,7 +224,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
             break;
         }
 
-        if(sendModel!= null){
+        if (sendModel != null) {
             sendModel.sendContent();
         }
 
@@ -235,50 +232,67 @@ public class SerialPortService extends Service implements SerialPortContentObser
 
     @Override
     public void onMuteChange(boolean mute) {
-        //TODO realmo send mute status to ops
-        Log.d("realmo","onMuteChange:"+mute);
+        if (isSelfChange()) {
+            return;
+        }
+        if (persisentStatus.volumeMute == mute) {
+            return;
+        }
+        persisentStatus.volumeMute = mute;
+        SendSerialPortModel model = new VolumeMuteSendModel(serialPortUtils, mute);
+        model.sendContent();
+
     }
 
     @Override
     public void onVolumeChange(int value) {
-        //TODO realmo send volume to ops
-        Log.d("realmo","onVolumeChange:"+value);
+        if (isSelfChange()) {
+            return;
+        }
+        if (persisentStatus.volume == value) {
+            return;
+        }
+        persisentStatus.volume = value;
+        SendSerialPortModel model = new VolumeSendModel(serialPortUtils, value);
+        model.sendContent();
     }
 
     @Override
     public void onBrightnessChange(int value) {
-        //TODO do nothing
+        //不需处理，亮度不需与ops同步
     }
 
-
-
-//    public class UARTListenerThread extends Thread {
-//
-//        @Override
-//        public void run() {
-//            super.run();
-//            while (true) {
-//                try {
-//                    sleep(1500);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                openSerialPortByUARTOnOff();
-//            }
-//        }
-//    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         serialPortUtils.closeSerialPort();
 
-//        if (mUARTListenerThread != null) {
-//            mUARTListenerThread.interrupt();
-//            mUARTListenerThread = null;
-//        }
-
         serialPortContentObserver.removeSerialPortContentObserver(this);
         serialPortContentObserver.release();
+        unregisterReceiver(v811MicMuteBroadcast);
+        v811MicMuteBroadcast.release();
+    }
+
+    @Override
+    public void micMuteStatusChanged(boolean isMute) {
+        if (isSelfChange()) {
+            return;
+        }
+        if (persisentStatus.micMute == isMute) {
+            return;
+        }
+        persisentStatus.micMute = isMute;
+        SendSerialPortModel model = new MicMuteSendModel(serialPortUtils, isMute);
+        model.sendContent();
+    }
+
+
+    private boolean isSelfChange() {
+        if (selfChange) {
+            selfChange = false;
+            return true;
+        }
+        return false;
     }
 }

@@ -1,6 +1,7 @@
 package com.newline.serialport;
 
 
+import android.os.SystemClock;
 import android.util.Log;
 
 
@@ -49,10 +50,10 @@ public class SerialPortUtils {
             Log.d(TAG,"outputStream:"+(outputStream==null));
             new ReadThread().start(); //开始线程监控是否有数据要接收
         } catch (IOException e) {
-            Log.e(TAG, "openSerialPort: 打开串口异常：" + e.toString());
+            Log.e(TAG, "openSerialPort failed " + e.toString());
             return serialPort;
         }
-        Log.d(TAG, "openSerialPort: 打开串口");
+        Log.d(TAG, "openSerialPort success");
         return serialPort;
     }
 
@@ -68,10 +69,10 @@ public class SerialPortUtils {
             this.threadStatus = true; //线程状态
             serialPort.close();
         } catch (IOException e) {
-            Log.e(TAG, "closeSerialPort: 关闭串口异常："+e.toString());
+            Log.e(TAG, "closeSerialPort wrong"+e.toString());
             return;
         }
-        Log.d(TAG, "closeSerialPort: 关闭串口成功");
+        Log.d(TAG, "closeSerialPort success");
     }
 
     /**
@@ -79,7 +80,7 @@ public class SerialPortUtils {
      * @param data String数据指令
      */
     public void sendSerialPort(String data){
-        Log.d(TAG, "sendSerialPort: 发送数据:"+data.replace(" ", ""));
+        Log.d(TAG, "sendSerialPort:"+data.replace(" ", ""));
 
         try {
             byte[] sendData = DataUtils.toBytes(data.replace(" ", ""));
@@ -87,12 +88,11 @@ public class SerialPortUtils {
                 outputStream.write(sendData);
                 outputStream.flush();
 
-                Log.d(TAG,""+sendData);
-                Log.d(TAG,"byte to string:"+SerialPortUtils.bytesToHexString(sendData).toUpperCase());
             }
         } catch (IOException e) {
-            Log.e(TAG, "sendSerialPort: 串口数据发送失败："+e.toString());
+            Log.e(TAG, "sendSerialPort wrong："+e.toString());
         }
+        SystemClock.sleep(10);
 
     }
 
@@ -100,17 +100,16 @@ public class SerialPortUtils {
      * 发送串口指令（字符串）
      */
     public void sendSerialPort(byte[] sendData){
-        Log.d(TAG, "sendSerialPort: 发送数据");
 
         try {
             if (sendData.length > 0) {
                 outputStream.write(sendData);
                 outputStream.flush();
-                Log.d(TAG, "sendSerialPort: 串口数据发送成功");
             }
         } catch (IOException e) {
-            Log.e(TAG, "sendSerialPort: 串口数据发送失败："+e.toString());
+            Log.e(TAG, "sendSerialPort wrong:"+e.toString());
         }
+        SystemClock.sleep(10);
 
     }
 
@@ -134,15 +133,13 @@ public class SerialPortUtils {
                 try {
                     size = inputStream.read(buffer);
                     if (size > 0){
-                        Log.d(TAG, "run: 接收到了数据：" + bytesToHexString(buffer));
-                        Log.d(TAG, "run: 接收到了数据大小：" + String.valueOf(size));
 
                         if (onDataReceiveListener != null) {
                             onDataReceiveListener.onDataReceive(buffer, size);
                         }
                     }
                 } catch (IOException e) {
-                    Log.e(TAG, "run: 数据读取异常：" +e.toString());
+                    Log.e(TAG, "read data wrong：" +e.toString());
                 }
             }
 

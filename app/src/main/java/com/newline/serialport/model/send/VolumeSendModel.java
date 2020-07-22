@@ -1,5 +1,7 @@
 package com.newline.serialport.model.send;
 
+import android.util.Log;
+
 import com.newline.serialport.SerialPortUtils;
 
 /**

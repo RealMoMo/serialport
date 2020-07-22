@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.util.Log;
 
 import com.newline.serialport.setting.observer.observer.broadcastobserver.BaseBroadcastReceiver;
 import com.newline.serialport.setting.utils.SettingConstant;

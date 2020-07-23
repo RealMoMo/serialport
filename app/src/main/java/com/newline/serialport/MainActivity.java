@@ -39,18 +39,10 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        Log.d("realmo","main keycode:"+keyCode);
         SerialPortDAO.putKeycode(MainActivity.this,keyCode);
         return super.onKeyUp(keyCode, event);
     }
 
-
-//    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//                Log.d("realmo","main keycode:"+keyCode);
-//        SerialPortDAO.putKeycode(MainActivity.this,keyCode);
-//        return super.onKeyDown(keyCode, event);
-//    }
 
 
 }

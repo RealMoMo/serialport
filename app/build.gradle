@@ -30,8 +30,8 @@ android {
         applicationId "com.newline.serialport"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 2
-        versionName "1.1.0"
+        versionCode 4
+        versionName "1.1.11"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
@@ -80,7 +80,7 @@ android {
     //打包后应用名称
     android.applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "SerialPort_${variant.productFlavors[0].name}.apk"
+            outputFileName = "NewlineSerialPort_${variant.productFlavors[0].name}.apk"
         }
     }
 

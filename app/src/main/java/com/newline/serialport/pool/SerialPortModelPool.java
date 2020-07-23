@@ -16,10 +16,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @name serialport
  * @email momo.weiye@gmail.com
  * @time 2020/7/22 15:52
- * @describe
+ * @describe 串口发送数据包对象缓冲池（添加发送失败重发机制）
  */
 public class SerialPortModelPool {
-
+    private static final String TAG = "SerialPortModelPool";
     private static final SerialPortModelPool ourInstance = new SerialPortModelPool();
     private static final int MAX_RETRY_TIMES = 3;
     private static final int MSG_RETRY_SEND = 0X200;
@@ -34,8 +34,8 @@ public class SerialPortModelPool {
             }else{
                 retryTimes++;
                 currentModel.sendContent();
-                Log.d("realmo","retry:"+retryTimes);
-                Log.d("realmo","retry content:"+currentModel.getSendContent());
+                Log.d(TAG,"retry:"+retryTimes);
+                Log.d(TAG,"retry content:"+currentModel.getSendContent());
                 sendEmptyMessageDelayed(MSG_RETRY_SEND,SEND_INTERVAL_TIMEMILLS);
             }
         }
@@ -58,7 +58,7 @@ public class SerialPortModelPool {
 
 
     public void addSendPortModel(SendSerialPortModel sendSerialPortModel){
-        Log.d("realmo","add pool");
+        Log.d(TAG,"add pool");
         waitModelQueue.add(sendSerialPortModel);
         if(tryQueue.isEmpty()){
            startSend(waitModelQueue.poll());
@@ -67,7 +67,7 @@ public class SerialPortModelPool {
 
 
     public void removePoolSendSerialPortModel(String content){
-        Log.d("realmo","remove content:"+content);
+        Log.d(TAG,"remove content:"+content);
         if(currentContent == null){
             return;
         }
@@ -90,19 +90,17 @@ public class SerialPortModelPool {
         currentContent = sendSerialPortModel.getSendContent();
         tryQueue.add(currentModel);
         mHandler.sendEmptyMessageDelayed(MSG_RETRY_SEND,SEND_INTERVAL_TIMEMILLS);
-//        Log.d("realmo","start init:"+currentModel.getSendContent());
-//        Log.d("realmo","start content:"+currentContent);
-        Log.d("realmo","send count:"+count);
+        Log.d(TAG,"send count:"+count);
     }
 
     private void startNextSend(){
         tempModel = waitModelQueue.poll();
         if(tempModel == null){
-            Log.d("realmo","end");
+            Log.d(TAG,"end");
             mHandler.removeCallbacksAndMessages(null);
         }else{
             startSend(tempModel);
-            Log.d("realmo","start next:"+currentModel.getSendContent());
+            Log.d(TAG,"start next:"+currentModel.getSendContent());
         }
     }
 
@@ -112,7 +110,7 @@ public class SerialPortModelPool {
         currentContent = null;
         tryQueue.clear();
         mHandler.removeMessages(MSG_RETRY_SEND);
-        Log.d("realmo","clear");
+        Log.d(TAG,"clear");
     }
 
 }

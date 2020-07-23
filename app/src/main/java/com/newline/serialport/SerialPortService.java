@@ -48,23 +48,24 @@ import org.jetbrains.annotations.Nullable;
 
 public class SerialPortService extends Service implements SerialPortContentObserver.SerialPortDAOChangeListener, StandardDeviceStatusListener, V811MicMuteBroadcast.MicStatusListener {
 
-    //    private static String TAG = "newlinePort";
-    private static String TAG = "realmo";
+    private static String TAG = "newlinePort";
+
 
     private SerialPortUtils serialPortUtils = new SerialPortUtils();
 
     private byte[] mBuffer;
 
     private static final int MSG_WHAT_VOLUME = 0X100;
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
-                case MSG_WHAT_VOLUME:{
+            switch (msg.what) {
+                case MSG_WHAT_VOLUME: {
                     SendSerialPortModel model = new VolumeSendModel(serialPortUtils, persisentStatus.volume);
                     serialPortModelPool.addSendPortModel(model);
-                }break;
+                }
+                break;
             }
         }
     };
@@ -82,7 +83,6 @@ public class SerialPortService extends Service implements SerialPortContentObser
      * 是否为自己主动改变状态的标记
      */
     private boolean selfChange = false;
-
 
 
     @Nullable
@@ -157,13 +157,13 @@ public class SerialPortService extends Service implements SerialPortContentObser
                 Log.d(TAG, "receiver content:" + content);
                 RecevierSerialPortModel recevierSerialPortModel = RecevierSerialPortModel.getSerialPortModelByControllingCode(content, size, hhtDeviceManager);
 
-                if(recevierSerialPortModel !=null){
+                if (recevierSerialPortModel != null) {
                     selfChange = true;
                     recevierSerialPortModel.action();
 
                     //回复答应
                     serialPortUtils.sendSerialPort(recevierSerialPortModel.retryContent());
-                }else{
+                } else {
                     //处理对方答应信息，移除在重发队列
                     serialPortModelPool.removePoolSendSerialPortModel(RecevierSerialPortModel.getTargetCode(content, size));
                 }
@@ -172,9 +172,12 @@ public class SerialPortService extends Service implements SerialPortContentObser
         });
     }
 
+    /**
+     * 处理按键转发
+     * @param keycode
+     */
     @Override
     public void getKeyEvent(int keycode) {
-        Log.d("realmo","getKeyEvent:"+keycode);
         SendSerialPortModel sendModel = null;
         switch (keycode) {
             case KeyEvent.KEYCODE_0: {
@@ -233,6 +236,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
                 sendModel = new RightSendModel(serialPortUtils);
             }
             break;
+            case KeyEvent.KEYCODE_DPAD_CENTER:
             case KeyEvent.KEYCODE_ENTER: {
                 sendModel = new EnterSendModel(serialPortUtils);
             }
@@ -256,7 +260,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
         }
 
         if (sendModel != null) {
-            ToastUtils.toast(this,""+keycode, Toast.LENGTH_SHORT);
+            //ToastUtils.toast(this,""+keycode,Toast.LENGTH_SHORT);
             serialPortModelPool.addSendPortModel(sendModel);
         }
 
@@ -286,7 +290,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
         }
         persisentStatus.volume = value;
         handler.removeMessages(MSG_WHAT_VOLUME);
-        handler.sendEmptyMessageDelayed(MSG_WHAT_VOLUME,100);
+        handler.sendEmptyMessageDelayed(MSG_WHAT_VOLUME, 100);
 
     }
 

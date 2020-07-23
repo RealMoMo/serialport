@@ -41,7 +41,7 @@ public class V811MicMuteBroadcast extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        boolean isMute = !intent.getBooleanExtra(EXTRA_MIC_STATUS,true);
+        boolean isMute = intent.getBooleanExtra(EXTRA_MIC_STATUS,false);
         micStatusListener.micMuteStatusChanged(isMute);
     }
 

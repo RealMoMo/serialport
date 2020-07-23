@@ -30,7 +30,7 @@ public abstract class RecevierSerialPortModel {
                 targetCode += " ";
             }
         }
-        Log.i("realmo", " recevier code:"+targetCode);
+
         switch (targetCode) {
             case V811MicMuteRecevierModel.CONTROLLING_CODE:{
                 return  new V811MicMuteRecevierModel(hhtDeviceManager);
@@ -60,6 +60,26 @@ public abstract class RecevierSerialPortModel {
 
 
     public abstract void action();
+
+    public abstract String retryContent();
+
+
+    public static String getTargetCode(String controllingCode, int size){
+        char[] codes = controllingCode.toCharArray();
+        String temp ="";
+        if (codes[0] == '7' && codes[1] == 'F') {
+            temp = "";
+        } else {
+            temp += " ";
+        }
+        for (int i = 0; i < size * 2; i++) {
+            temp += codes[i];
+            if (i!= 0 && i % 2 != 0 && i!=(size*2 -1)) {
+                temp += " ";
+            }
+        }
+        return temp;
+    }
 
     /**
      * 获取指令倒数第二段内容

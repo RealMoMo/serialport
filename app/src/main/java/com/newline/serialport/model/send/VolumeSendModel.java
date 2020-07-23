@@ -1,7 +1,5 @@
 package com.newline.serialport.model.send;
 
-import android.util.Log;
-
 import com.newline.serialport.SerialPortUtils;
 
 /**
@@ -26,10 +24,11 @@ public class VolumeSendModel extends SendSerialPortModel {
         if(volumeHexStr.length() == 1){
             volumeHexStr = "0"+volumeHexStr;
         }
+        volumeHexStr = volumeHexStr.toUpperCase();
     }
 
     @Override
-    String getSendContent() {
+    public String getSendContent() {
 
         return sendContent.replace("XX", volumeHexStr);
     }

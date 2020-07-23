@@ -17,7 +17,7 @@ public class Number2SendModel extends SendSerialPortModel {
     }
 
     @Override
-    String getSendContent() {
+    public String getSendContent() {
         return "7F 09 99 A2 B3 C4 02 FF 15 42 01 CF";
     }
 }

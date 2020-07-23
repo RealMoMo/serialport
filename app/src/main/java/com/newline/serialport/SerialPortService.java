@@ -4,8 +4,10 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.Toast;
 
 
 import com.ist.android.tv.IstEventManager;
@@ -35,8 +37,10 @@ import com.newline.serialport.model.send.VolumeMuteSendModel;
 import com.newline.serialport.model.send.VolumeSendModel;
 import com.newline.serialport.model.send.ZoomInSendModel;
 import com.newline.serialport.model.send.ZoomOutSendModel;
+import com.newline.serialport.pool.SerialPortModelPool;
 import com.newline.serialport.setting.HHTDeviceManager;
 import com.newline.serialport.setting.i.StandardDeviceStatusListener;
+import com.newline.serialport.utils.ToastUtils;
 
 
 import org.jetbrains.annotations.Nullable;
@@ -50,16 +54,36 @@ public class SerialPortService extends Service implements SerialPortContentObser
     private SerialPortUtils serialPortUtils = new SerialPortUtils();
 
     private byte[] mBuffer;
-    private Handler handler = new Handler();
+
+    private static final int MSG_WHAT_VOLUME = 0X100;
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case MSG_WHAT_VOLUME:{
+                    SendSerialPortModel model = new VolumeSendModel(serialPortUtils, persisentStatus.volume);
+                    serialPortModelPool.addSendPortModel(model);
+                }break;
+            }
+        }
+    };
 
     private SerialPortContentObserver serialPortContentObserver;
+
     private HHTDeviceManager hhtDeviceManager;
 
     private V811MicMuteBroadcast v811MicMuteBroadcast;
 
-    private boolean selfChange = false;
+    private SerialPortModelPool serialPortModelPool;
 
     private PersisentStatus persisentStatus;
+    /**
+     * 是否为自己主动改变状态的标记
+     */
+    private boolean selfChange = false;
+
+
 
     @Nullable
     @Override
@@ -77,6 +101,8 @@ public class SerialPortService extends Service implements SerialPortContentObser
         initV811PlatformStatusListener();
 
         initPersistenceStatus();
+
+        serialPortModelPool = SerialPortModelPool.getInstance();
 
     }
 
@@ -134,23 +160,21 @@ public class SerialPortService extends Service implements SerialPortContentObser
                 if(recevierSerialPortModel !=null){
                     selfChange = true;
                     recevierSerialPortModel.action();
+
+                    //回复答应
+                    serialPortUtils.sendSerialPort(recevierSerialPortModel.retryContent());
+                }else{
+                    //处理对方答应信息，移除在重发队列
+                    serialPortModelPool.removePoolSendSerialPortModel(RecevierSerialPortModel.getTargetCode(content, size));
                 }
 
-//                if (recevierSerialPortModel != null) {
-//                    recevierSerialPortModel.action(SerialPortService.this);
-//
-//                    String code = recevierSerialPortModel.getReturnCode();
-//                    if(code != null){
-//                        serialPortUtils.sendSerialPort(code);
-//                    }
-//
-//                }
             }
         });
     }
 
     @Override
     public void getKeyEvent(int keycode) {
+        Log.d("realmo","getKeyEvent:"+keycode);
         SendSerialPortModel sendModel = null;
         switch (keycode) {
             case KeyEvent.KEYCODE_0: {
@@ -232,7 +256,8 @@ public class SerialPortService extends Service implements SerialPortContentObser
         }
 
         if (sendModel != null) {
-            sendModel.sendContent();
+            ToastUtils.toast(this,""+keycode, Toast.LENGTH_SHORT);
+            serialPortModelPool.addSendPortModel(sendModel);
         }
 
     }
@@ -247,7 +272,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
         }
         persisentStatus.volumeMute = mute;
         SendSerialPortModel model = new VolumeMuteSendModel(serialPortUtils, mute);
-        model.sendContent();
+        serialPortModelPool.addSendPortModel(model);
 
     }
 
@@ -260,8 +285,9 @@ public class SerialPortService extends Service implements SerialPortContentObser
             return;
         }
         persisentStatus.volume = value;
-        SendSerialPortModel model = new VolumeSendModel(serialPortUtils, value);
-        model.sendContent();
+        handler.removeMessages(MSG_WHAT_VOLUME);
+        handler.sendEmptyMessageDelayed(MSG_WHAT_VOLUME,100);
+
     }
 
     @Override
@@ -273,11 +299,16 @@ public class SerialPortService extends Service implements SerialPortContentObser
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        handler.removeCallbacksAndMessages(null);
+        handler = null;
+
         serialPortUtils.closeSerialPort();
 
         serialPortContentObserver.removeSerialPortContentObserver(this);
         serialPortContentObserver.release();
         unregisterReceiver(v811MicMuteBroadcast);
+        serialPortModelPool.release();
         v811MicMuteBroadcast.release();
     }
 
@@ -291,7 +322,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
         }
         persisentStatus.micMute = isMute;
         SendSerialPortModel model = new MicMuteSendModel(serialPortUtils, isMute);
-        model.sendContent();
+        serialPortModelPool.addSendPortModel(model);
     }
 
 

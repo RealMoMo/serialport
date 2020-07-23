@@ -11,11 +11,12 @@ import com.newline.serialport.setting.HHTDeviceManager;
  * @describe
  */
 public class VolumeRecevierModel extends RecevierSerialPortModel {
-
     /**
      * 设置音量全命令： 7F 08 99 A2 B3 C4 02 FF 05 XX CF
      * XX 范围：0-100
      */
+    private static final String REAL_CONTROLLING_CODE = "7F 08 99 A2 B3 C4 02 FF 05 XX CF";
+
     public static final String CONTROLLING_CODE = "7F 08 99 A2 B3 C4 02 FF 05";
 
     private int volume;
@@ -29,5 +30,10 @@ public class VolumeRecevierModel extends RecevierSerialPortModel {
     @Override
     public void action() {
         hhtDeviceManager.get().setVolume(volume);
+    }
+
+    @Override
+    public String retryContent() {
+        return REAL_CONTROLLING_CODE.replace("XX", ""+volume);
     }
 }

@@ -24,6 +24,7 @@ public class SerialPortUtils {
 
     protected String TAG = "realmo";
     protected String path = "/dev/ttyAMA4";
+//    protected String path = "/dev/ttyS0";
     protected int baudrate = 115200;
     public boolean serialPortStatus = false; //是否打开串口标志
     public boolean threadStatus; //线程状态，为了安全终止线程

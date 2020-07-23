@@ -24,7 +24,7 @@ public class VolumeMuteSendModel extends SendSerialPortModel {
     }
 
     @Override
-    String getSendContent() {
+    public String getSendContent() {
         return sendContent.replace("XX",mute?"00":"01");
     }
 }

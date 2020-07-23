@@ -1,5 +1,7 @@
 package com.newline.serialport.model.send;
 
+import android.support.annotation.Nullable;
+
 import com.newline.serialport.SerialPortUtils;
 
 import java.lang.ref.WeakReference;
@@ -21,7 +23,7 @@ public abstract class SendSerialPortModel {
         this.serialPort = new WeakReference(serialPort);
     }
 
-    abstract String getSendContent();
+    public abstract String getSendContent();
 
     public void sendContent(){
         if(serialPort.get()== null){
@@ -29,4 +31,22 @@ public abstract class SendSerialPortModel {
         }
         serialPort.get().sendSerialPort(getSendContent());
     }
-} 
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if(obj == null){
+            return false;
+        }
+        if(obj == this){
+            return true;
+        }
+        if(obj instanceof String){
+            return this.getSendContent().equals(obj);
+        }
+        if(obj instanceof SendSerialPortModel){
+            return this.getSendContent().equals(((SendSerialPortModel) obj).getSendContent());
+        }
+
+        return super.equals(obj);
+    }
+}

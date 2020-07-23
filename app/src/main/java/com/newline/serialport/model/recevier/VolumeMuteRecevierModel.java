@@ -23,4 +23,9 @@ public class VolumeMuteRecevierModel extends RecevierSerialPortModel {
     public void action() {
         hhtDeviceManager.get().setMute(true);
     }
+
+    @Override
+    public String retryContent() {
+        return CONTROLLING_CODE;
+    }
 }

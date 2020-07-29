@@ -241,6 +241,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
                 sendModel = new EnterSendModel(serialPortUtils);
             }
             break;
+            case KeyEvent.KEYCODE_FORWARD_DEL:
             case KeyEvent.KEYCODE_DEL: {
                 sendModel = new DelSendModel(serialPortUtils);
             }

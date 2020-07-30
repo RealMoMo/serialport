@@ -24,7 +24,8 @@ public class SerialPortUtils {
 
     protected String TAG = "SerialPortUtils";
     protected String path = "/dev/ttyAMA4";
-    protected int baudrate = 115200;
+//    protected int baudrate = 115200;
+    protected int baudrate = 38400;
     public boolean serialPortStatus = false; //是否打开串口标志
     public boolean threadStatus; //线程状态，为了安全终止线程
 

@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.hht.serialport.R;
+
 import com.newline.serialport.dao.SerialPortDAO;
 import com.newline.serialport.utils.StartActivityManager;
 

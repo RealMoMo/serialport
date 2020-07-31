@@ -36,7 +36,6 @@ public class MainActivity extends Activity {
     }
 
 
-
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         SerialPortDAO.putKeycode(MainActivity.this,keyCode, SerialPortDAO.KeyInent.UP);

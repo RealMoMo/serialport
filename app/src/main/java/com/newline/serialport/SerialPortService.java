@@ -49,9 +49,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
 
     private static String TAG = "newlinePort";
 
-
     private SerialPortUtils serialPortUtils = new SerialPortUtils();
-
     private byte[] mBuffer;
 
     private static final int MSG_WHAT_VOLUME = 0X100;
@@ -267,6 +265,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
 
     }
 
+
     @Override
     public void onMuteChange(boolean mute) {
         if (isSelfChange()) {
@@ -300,23 +299,6 @@ public class SerialPortService extends Service implements SerialPortContentObser
         //不需处理，亮度不需与ops同步
     }
 
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        handler.removeCallbacksAndMessages(null);
-        handler = null;
-
-        serialPortUtils.closeSerialPort();
-
-        serialPortContentObserver.removeSerialPortContentObserver(this);
-        serialPortContentObserver.release();
-        unregisterReceiver(v811MicMuteBroadcast);
-        serialPortModelPool.release();
-        v811MicMuteBroadcast.release();
-    }
-
     @Override
     public void micMuteStatusChanged(boolean isMute) {
         if (isSelfChange()) {
@@ -338,4 +320,23 @@ public class SerialPortService extends Service implements SerialPortContentObser
         }
         return false;
     }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        handler.removeCallbacksAndMessages(null);
+        handler = null;
+
+        serialPortUtils.closeSerialPort();
+
+        serialPortContentObserver.removeSerialPortContentObserver(this);
+        serialPortContentObserver.release();
+        unregisterReceiver(v811MicMuteBroadcast);
+        serialPortModelPool.release();
+        v811MicMuteBroadcast.release();
+    }
+
+
 }

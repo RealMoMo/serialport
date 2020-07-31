@@ -5,9 +5,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.SQLException;
 import android.net.Uri;
+import android.support.annotation.IntDef;
 import android.support.annotation.Keep;
-import android.util.Log;
-import android.view.KeyEvent;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * @author Realmo
@@ -33,7 +35,29 @@ public class SerialPortDAO {
     @Keep
     public static final String VALUE = "value";
     @Keep
+    public static final String KEY_INTENT = "key_intent";
+    @Keep
     public static final String KEY_KEYCODE=  "keycode";
+
+
+    /**
+     * 按键事件意图类型
+     */
+    @Keep
+    @IntDef({KeyInent.DOWN, KeyInent.REPEAT, KeyInent.UP,KeyInent.PRESS, KeyInent.LONG_PRESS})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface KeyInent {
+        @Keep
+        int DOWN = 1;
+        @Keep
+        int REPEAT = DOWN+1;
+        @Keep
+        int UP = DOWN+2;
+        @Keep
+        int PRESS = DOWN+3;
+        @Keep
+        int LONG_PRESS = DOWN+4;
+    }
 
     /**
      * 发送keycode to Newline串口服务
@@ -42,9 +66,19 @@ public class SerialPortDAO {
      * @return  是否发送成功
      */
     @Keep
-    public static boolean putKeycode(Context context, int keycode){
+    public static boolean putKeycode(Context context, int keycode, @KeyInent int keyInent){
 
-        return putInt(context.getContentResolver(),SERIAL_PORT_URI,KEY_KEYCODE,keycode);
+        try {
+            ContentValues conValue = new ContentValues();
+            conValue.put(NAME, KEY_KEYCODE);
+            conValue.put(VALUE, keycode);
+            conValue.put(KEY_INTENT, keyInent);
+            context.getContentResolver().update(SERIAL_PORT_URI, conValue, null, null);
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 

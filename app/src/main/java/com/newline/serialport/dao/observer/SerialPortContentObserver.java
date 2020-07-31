@@ -6,6 +6,7 @@ import android.os.Handler;
 
 import com.newline.serialport.dao.KeyEventDAO;
 import com.newline.serialport.dao.SerialPortDAO;
+import com.newline.serialport.model.KeyEventBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +24,9 @@ public class SerialPortContentObserver extends ContentObserver {
     public interface SerialPortDAOChangeListener{
         /**
          * 获取最新的按键事件
-         * @param keycode
+         * @param keyEventBean
          */
-        void getKeyEvent(int keycode);
+        void getKeyEvent(KeyEventBean keyEventBean);
 
     }
 
@@ -87,12 +88,12 @@ public class SerialPortContentObserver extends ContentObserver {
 
     private void keyEventChange(){
         while(true){
-            Integer keycode = KeyEventDAO.keyCodeQueue.poll();
-            if(keycode == null){
+            KeyEventBean keyEventBean = KeyEventDAO.keyCodeQueue.poll();
+            if(keyEventBean == null){
                 break;
             }
             for (SerialPortDAOChangeListener listener : observerList) {
-                    listener.getKeyEvent(keycode);
+                    listener.getKeyEvent(keyEventBean);
             }
         }
 

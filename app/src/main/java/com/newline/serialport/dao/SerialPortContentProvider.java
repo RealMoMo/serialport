@@ -8,6 +8,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.newline.serialport.model.KeyEventBean;
+
 /**
  * @author Realmo
  * @version 1.0.0
@@ -57,7 +59,9 @@ public class SerialPortContentProvider extends ContentProvider {
             }
             switch (key){
                 case SerialPortDAO.KEY_KEYCODE:{
-                    KeyEventDAO.keyCodeQueue.add((Integer) values.get(SerialPortDAO.VALUE));
+                    KeyEventBean keyEventBean = new KeyEventBean((int)values.get(SerialPortDAO.VALUE),(int)values.get(SerialPortDAO.KEY_INTENT));
+                    KeyEventDAO.keyCodeQueue.add(keyEventBean);
+//                    KeyEventDAO.keyCodeQueue.add((Integer) values.get(SerialPortDAO.VALUE));
                     getContext().getContentResolver().notifyChange(Uri.withAppendedPath(uri,key), null);
                     return 1;
                 }

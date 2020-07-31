@@ -7,12 +7,12 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.widget.Toast;
 
 
 import com.ist.android.tv.IstEventManager;
 import com.newline.serialport.broadcast.V811MicMuteBroadcast;
 import com.newline.serialport.dao.observer.SerialPortContentObserver;
+import com.newline.serialport.model.KeyEventBean;
 import com.newline.serialport.model.PersisentStatus;
 import com.newline.serialport.model.recevier.RecevierSerialPortModel;
 import com.newline.serialport.model.send.DelSendModel;
@@ -40,7 +40,6 @@ import com.newline.serialport.model.send.ZoomOutSendModel;
 import com.newline.serialport.pool.SerialPortModelPool;
 import com.newline.serialport.setting.HHTDeviceManager;
 import com.newline.serialport.setting.i.StandardDeviceStatusListener;
-import com.newline.serialport.utils.ToastUtils;
 
 
 import org.jetbrains.annotations.Nullable;
@@ -174,12 +173,13 @@ public class SerialPortService extends Service implements SerialPortContentObser
 
     /**
      * 处理按键转发
-     * @param keycode
+     * @param keyEventBean
      */
     @Override
-    public void getKeyEvent(int keycode) {
+    public void getKeyEvent(KeyEventBean keyEventBean) {
+        Log.d(TAG,"getkeyevent:"+keyEventBean.toString());
         SendSerialPortModel sendModel = null;
-        switch (keycode) {
+        switch (keyEventBean.getKeycode()) {
             case KeyEvent.KEYCODE_0: {
                 sendModel = new Number0SendModel(serialPortUtils);
             }

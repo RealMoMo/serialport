@@ -1,5 +1,7 @@
 package com.newline.serialport.dao;
 
+import com.newline.serialport.model.KeyEventBean;
+
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -14,6 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class KeyEventDAO {
 
-    public static Queue<Integer> keyCodeQueue = new ConcurrentLinkedQueue();
+    //public static Queue<Integer> keyCodeQueue = new ConcurrentLinkedQueue();
+    public static Queue<KeyEventBean> keyCodeQueue = new ConcurrentLinkedQueue();
 
 } 

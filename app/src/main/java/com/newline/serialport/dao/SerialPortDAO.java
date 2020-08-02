@@ -40,6 +40,7 @@ public class SerialPortDAO {
     public static final String KEY_KEYCODE=  "keycode";
 
 
+
     /**
      * 按键事件意图类型
      */
@@ -80,6 +81,7 @@ public class SerialPortDAO {
             return false;
         }
     }
+
 
 
     @Keep

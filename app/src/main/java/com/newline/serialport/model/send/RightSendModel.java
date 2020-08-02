@@ -10,14 +10,37 @@ import com.newline.serialport.SerialPortUtils;
  * @time 2020/7/20 17:38
  * @describe
  */
-public class RightSendModel extends SendSerialPortModel {
+public class RightSendModel extends BaseKeyEventSendModel {
 
-    public RightSendModel(SerialPortUtils serialPort) {
-        super(serialPort);
+
+    public RightSendModel(SerialPortUtils serialPort, int keyIntent) {
+        super(serialPort, keyIntent);
+    }
+
+
+
+    @Override
+    String getKeyDownContent() {
+        return "7F 09 99 A2 B3 C4 02 FF 15 07 01 CF";
     }
 
     @Override
-    public String getSendContent() {
-        return "7F 09 99 A2 B3 C4 02 FF 15 07 01 CF";
+    String getKeyRepeatContent() {
+        return "7F 09 99 A2 B3 C4 02 FF 15 07 20 CF";
+    }
+
+    @Override
+    String getKeyUpContent() {
+        return "";
+    }
+
+    @Override
+    String getKeyPressContent() {
+        return "";
+    }
+
+    @Override
+    String getKeyLongPressContent() {
+        return "";
     }
 }

@@ -1,5 +1,7 @@
 package com.newline.serialport.model.send;
 
+import android.content.Context;
+
 import com.newline.serialport.SerialPortUtils;
 
 /**
@@ -10,14 +12,36 @@ import com.newline.serialport.SerialPortUtils;
  * @time 2020/7/20 17:38
  * @describe
  */
-public class DownSendModel extends SendSerialPortModel {
+public class DownSendModel extends BaseKeyEventSendModel {
 
-    public DownSendModel(SerialPortUtils serialPort) {
-        super(serialPort);
+
+    public DownSendModel(SerialPortUtils serialPort, int keyIntent) {
+        super(serialPort, keyIntent);
+    }
+
+
+    @Override
+    String getKeyDownContent() {
+        return "7F 09 99 A2 B3 C4 02 FF 15 08 01 CF";
     }
 
     @Override
-    public String getSendContent() {
-        return "7F 09 99 A2 B3 C4 02 FF 15 08 01 CF";
+    String getKeyRepeatContent() {
+        return "7F 09 99 A2 B3 C4 02 FF 15 08 20 CF";
+    }
+
+    @Override
+    String getKeyUpContent() {
+        return "";
+    }
+
+    @Override
+    String getKeyPressContent() {
+        return "";
+    }
+
+    @Override
+    String getKeyLongPressContent() {
+        return "";
     }
 }

@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 
 import com.ist.android.tv.IstEventManager;
 import com.newline.serialport.broadcast.V811MicMuteBroadcast;
+import com.newline.serialport.dao.SerialPortDAO;
 import com.newline.serialport.dao.observer.SerialPortContentObserver;
 import com.newline.serialport.model.KeyEventBean;
 import com.newline.serialport.model.PersisentStatus;
@@ -152,7 +153,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
                 mBuffer = buffer;
                 String content = SerialPortUtils.bytesToHexString(mBuffer).toUpperCase();
                 Log.d(TAG, "receiver content:" + content);
-                RecevierSerialPortModel recevierSerialPortModel = RecevierSerialPortModel.getSerialPortModelByControllingCode(content, size, hhtDeviceManager);
+                RecevierSerialPortModel recevierSerialPortModel = RecevierSerialPortModel.getSerialPortModelByControllingCode(content, size, SerialPortService.this,hhtDeviceManager);
 
                 if (recevierSerialPortModel != null) {
                     selfChange = true;
@@ -160,6 +161,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
 
                     //回复答应
                     serialPortUtils.sendSerialPort(recevierSerialPortModel.retryContent());
+
                 } else {
                     //处理对方答应信息，移除在重发队列
                     serialPortModelPool.removePoolSendSerialPortModel(RecevierSerialPortModel.getTargetCode(content, size));
@@ -169,6 +171,8 @@ public class SerialPortService extends Service implements SerialPortContentObser
         });
     }
 
+
+
     /**
      * 处理按键转发
      * @param keyEventBean
@@ -177,7 +181,26 @@ public class SerialPortService extends Service implements SerialPortContentObser
     public void getKeyEvent(KeyEventBean keyEventBean) {
         Log.d(TAG,"getkeyevent:"+keyEventBean.toString());
         SendSerialPortModel sendModel = null;
-        switch (keyEventBean.getKeycode()) {
+
+        switch (keyEventBean.getKeyIntent()){
+            case SerialPortDAO.KeyInent.REPEAT: {
+                dealRepeatKey(keyEventBean.getKeycode());
+                return;
+            }
+            case SerialPortDAO.KeyInent.DOWN:{
+                dealSingleKey(keyEventBean.getKeycode());
+                return;
+            }
+            default:{
+
+            }break;
+        }
+
+    }
+
+    private void dealSingleKey(int keycode){
+        SendSerialPortModel sendModel = null;
+        switch (keycode) {
             case KeyEvent.KEYCODE_0: {
                 sendModel = new Number0SendModel(serialPortUtils);
             }
@@ -219,24 +242,24 @@ public class SerialPortService extends Service implements SerialPortContentObser
             }
             break;
             case KeyEvent.KEYCODE_DPAD_UP: {
-                sendModel = new UpSendModel(serialPortUtils);
+                sendModel = new UpSendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
             }
             break;
             case KeyEvent.KEYCODE_DPAD_DOWN: {
-                sendModel = new DownSendModel(serialPortUtils);
+                sendModel = new DownSendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
             }
             break;
             case KeyEvent.KEYCODE_DPAD_LEFT: {
-                sendModel = new LeftSendModel(serialPortUtils);
+                sendModel = new LeftSendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
             }
             break;
             case KeyEvent.KEYCODE_DPAD_RIGHT: {
-                sendModel = new RightSendModel(serialPortUtils);
+                sendModel = new RightSendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
             }
             break;
             case KeyEvent.KEYCODE_DPAD_CENTER:
             case KeyEvent.KEYCODE_ENTER: {
-                sendModel = new EnterSendModel(serialPortUtils);
+                sendModel = new EnterSendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
             }
             break;
             case KeyEvent.KEYCODE_FORWARD_DEL:
@@ -245,11 +268,11 @@ public class SerialPortService extends Service implements SerialPortContentObser
             }
             break;
             case KeyEvent.KEYCODE_ZOOM_IN: {
-                sendModel = new ZoomInSendModel(serialPortUtils);
+                sendModel = new ZoomInSendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
             }
             break;
             case KeyEvent.KEYCODE_ZOOM_OUT: {
-                sendModel = new ZoomOutSendModel(serialPortUtils);
+                sendModel = new ZoomOutSendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
             }
             break;
             default: {
@@ -259,8 +282,49 @@ public class SerialPortService extends Service implements SerialPortContentObser
         }
 
         if (sendModel != null) {
-            //ToastUtils.toast(this,""+keycode,Toast.LENGTH_SHORT);
             serialPortModelPool.addSendPortModel(sendModel);
+        }
+    }
+
+
+    private void dealRepeatKey(int keycode){
+        SendSerialPortModel sendModel = null;
+        switch (keycode){
+            case KeyEvent.KEYCODE_DPAD_UP: {
+                sendModel = new UpSendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
+            }
+            break;
+            case KeyEvent.KEYCODE_DPAD_DOWN: {
+                sendModel = new DownSendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
+            }
+            break;
+            case KeyEvent.KEYCODE_DPAD_LEFT: {
+                sendModel = new LeftSendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
+            }
+            break;
+            case KeyEvent.KEYCODE_DPAD_RIGHT: {
+                sendModel = new RightSendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
+            }
+            break;
+            case KeyEvent.KEYCODE_DPAD_CENTER:
+            case KeyEvent.KEYCODE_ENTER: {
+                sendModel = new EnterSendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
+            }
+            break;
+            case KeyEvent.KEYCODE_ZOOM_IN: {
+                sendModel = new ZoomInSendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
+            }
+            break;
+            case KeyEvent.KEYCODE_ZOOM_OUT: {
+                sendModel = new ZoomOutSendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
+            }
+            break;
+            default:{
+
+            }break;
+        }
+        if(sendModel!= null){
+            sendModel.sendContent();
         }
 
     }

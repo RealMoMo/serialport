@@ -18,7 +18,8 @@ public abstract class SendSerialPortModel {
 
 
     WeakReference<SerialPortUtils> serialPort;
-
+//    //重发次数
+//    public int tryCount = 3;
     public SendSerialPortModel(SerialPortUtils serialPort) {
         this.serialPort = new WeakReference(serialPort);
     }

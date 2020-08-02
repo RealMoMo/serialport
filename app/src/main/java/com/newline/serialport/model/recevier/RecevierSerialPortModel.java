@@ -1,5 +1,6 @@
 package com.newline.serialport.model.recevier;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.newline.serialport.setting.HHTDeviceManager;
@@ -17,7 +18,7 @@ public abstract class RecevierSerialPortModel {
     }
 
     //Set xx 未处理
-    public static RecevierSerialPortModel getSerialPortModelByControllingCode(String controllingCode, int size, HHTDeviceManager hhtDeviceManager) {
+    public static RecevierSerialPortModel getSerialPortModelByControllingCode(String controllingCode, int size, Context context, HHTDeviceManager hhtDeviceManager) {
         char[] codes = controllingCode.toCharArray();
         if (codes[0] == '7' && codes[1] == 'F') {
             targetCode = "";
@@ -43,6 +44,9 @@ public abstract class RecevierSerialPortModel {
             }
             case VolumeUnMuteRecevierModel.CONTROLLING_CODE:{
                 return new VolumeUnMuteRecevierModel(hhtDeviceManager);
+            }
+            case V811OpsReadyRecevierModel.CONTROLLING_CODE:{
+                return new V811OpsReadyRecevierModel(context,hhtDeviceManager);
             }
             default:{
 

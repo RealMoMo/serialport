@@ -14,7 +14,7 @@ import com.newline.serialport.setting.HHTDeviceManager;
 public class SyncStatusRecevierModel extends RecevierSerialPortModel {
 
 
-    public static final String CONTROLLING_CODE = "";
+    public static final String CONTROLLING_CODE = "7F 08 99 A2 B3 C4 02 FF 68 01 CF";
 
     public SyncStatusRecevierModel(HHTDeviceManager hhtDeviceManager) {
         super(hhtDeviceManager);

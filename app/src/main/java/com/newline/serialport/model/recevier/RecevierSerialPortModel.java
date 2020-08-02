@@ -13,6 +13,8 @@ public abstract class RecevierSerialPortModel {
 
     WeakReference<HHTDeviceManager> hhtDeviceManager;
 
+    public boolean changeAndroidDevice = false;
+
     public RecevierSerialPortModel(HHTDeviceManager hhtDeviceManager) {
         this.hhtDeviceManager = new WeakReference(hhtDeviceManager);
     }
@@ -47,6 +49,9 @@ public abstract class RecevierSerialPortModel {
             }
             case V811OpsReadyRecevierModel.CONTROLLING_CODE:{
                 return new V811OpsReadyRecevierModel(context,hhtDeviceManager);
+            }
+            case SyncStatusRecevierModel.CONTROLLING_CODE:{
+                return new SyncStatusRecevierModel(hhtDeviceManager);
             }
             default:{
 

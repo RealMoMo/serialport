@@ -27,6 +27,7 @@ public class VolumeRecevierModel extends RecevierSerialPortModel {
     public VolumeRecevierModel(HHTDeviceManager hhtDeviceManager,int volume) {
         super(hhtDeviceManager);
         this.volume = volume;
+        changeAndroidDevice = true;
     }
 
     @Override

@@ -16,6 +16,7 @@ import com.newline.serialport.dao.observer.SerialPortContentObserver;
 import com.newline.serialport.model.KeyEventBean;
 import com.newline.serialport.model.PersisentStatus;
 import com.newline.serialport.model.recevier.RecevierSerialPortModel;
+import com.newline.serialport.model.recevier.SyncStatusRecevierModel;
 import com.newline.serialport.model.send.DelSendModel;
 import com.newline.serialport.model.send.DownSendModel;
 import com.newline.serialport.model.send.EnterSendModel;
@@ -156,12 +157,15 @@ public class SerialPortService extends Service implements SerialPortContentObser
                 RecevierSerialPortModel recevierSerialPortModel = RecevierSerialPortModel.getSerialPortModelByControllingCode(content, size, SerialPortService.this,hhtDeviceManager);
 
                 if (recevierSerialPortModel != null) {
-                    selfChange = true;
+                    selfChange = recevierSerialPortModel.changeAndroidDevice;
                     recevierSerialPortModel.action();
 
                     //回复答应
                     serialPortUtils.sendSerialPort(recevierSerialPortModel.retryContent());
-
+                    //处理同步设备状态
+                    if(recevierSerialPortModel instanceof SyncStatusRecevierModel){
+                        syncDeviceStatusToOps();
+                    }
                 } else {
                     //处理对方答应信息，移除在重发队列
                     serialPortModelPool.removePoolSendSerialPortModel(RecevierSerialPortModel.getTargetCode(content, size));
@@ -171,6 +175,21 @@ public class SerialPortService extends Service implements SerialPortContentObser
         });
     }
 
+
+
+    private void syncDeviceStatusToOps() {
+        SendSerialPortModel model = new VolumeSendModel(serialPortUtils, persisentStatus.volume);
+        serialPortModelPool.addSendPortModel(model);
+
+
+        model = new MicMuteSendModel(serialPortUtils, persisentStatus.micMute);
+        serialPortModelPool.addSendPortModel(model);
+
+        model = new VolumeMuteSendModel(serialPortUtils, persisentStatus.volumeMute);
+        serialPortModelPool.addSendPortModel(model);
+
+
+    }
 
 
     /**
@@ -198,6 +217,10 @@ public class SerialPortService extends Service implements SerialPortContentObser
 
     }
 
+    /**
+     * 处理短按按键消息
+     * @param keycode
+     */
     private void dealSingleKey(int keycode){
         SendSerialPortModel sendModel = null;
         switch (keycode) {
@@ -287,6 +310,10 @@ public class SerialPortService extends Service implements SerialPortContentObser
     }
 
 
+    /**
+     * 处理长按按键消息
+     * @param keycode
+     */
     private void dealRepeatKey(int keycode){
         SendSerialPortModel sendModel = null;
         switch (keycode){
@@ -333,6 +360,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
     @Override
     public void onMuteChange(boolean mute) {
         if (isSelfChange()) {
+            persisentStatus.volumeMute = mute;
             return;
         }
         if (persisentStatus.volumeMute == mute) {
@@ -347,6 +375,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
     @Override
     public void onVolumeChange(int value) {
         if (isSelfChange()) {
+            persisentStatus.volume = value;
             return;
         }
         if (persisentStatus.volume == value) {
@@ -366,6 +395,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
     @Override
     public void micMuteStatusChanged(boolean isMute) {
         if (isSelfChange()) {
+            persisentStatus.micMute = isMute;
             return;
         }
         if (persisentStatus.micMute == isMute) {

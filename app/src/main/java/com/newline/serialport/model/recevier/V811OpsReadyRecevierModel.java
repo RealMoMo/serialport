@@ -2,8 +2,10 @@ package com.newline.serialport.model.recevier;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.newline.serialport.setting.HHTDeviceManager;
+import com.newline.serialport.setting.utils.SystemPropertiesUtils;
 
 
 /**
@@ -30,6 +32,9 @@ public class V811OpsReadyRecevierModel extends RecevierSerialPortModel {
     public void action() {
         //发广播给系统，结束开机动画以及跳转到ops
         mContext.sendBroadcast(new Intent("android.tencent.dismiss_view"));
+        if(!((boolean)SystemPropertiesUtils.getProperty("ro.product.dismiss", false))) {
+            SystemPropertiesUtils.setProperty("ro.product.dismiss","true");
+        }
 
     }
 

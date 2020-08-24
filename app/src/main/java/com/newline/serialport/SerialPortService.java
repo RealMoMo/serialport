@@ -20,6 +20,7 @@ import com.newline.serialport.model.recevier.SyncStatusRecevierModel;
 import com.newline.serialport.model.send.DelSendModel;
 import com.newline.serialport.model.send.DownSendModel;
 import com.newline.serialport.model.send.EnterSendModel;
+import com.newline.serialport.model.send.KeyPlusSendModel;
 import com.newline.serialport.model.send.LeftSendModel;
 import com.newline.serialport.model.send.MicMuteSendModel;
 import com.newline.serialport.model.send.Number0SendModel;
@@ -141,7 +142,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
 
     private void initSerialPortListener() {
 
-        //TODO temp 直接开启，应该需判断uart口状态
+        //直接开启，正确流程应该需判断uart口状态
         serialPortUtils.openSerialPort();
 
 
@@ -298,6 +299,9 @@ public class SerialPortService extends Service implements SerialPortContentObser
                 sendModel = new ZoomOutSendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
             }
             break;
+            case KeyEvent.KEYCODE_PLUS:{
+                sendModel = new KeyPlusSendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
+            }break;
             default: {
 
             }
@@ -346,6 +350,9 @@ public class SerialPortService extends Service implements SerialPortContentObser
                 sendModel = new ZoomOutSendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
             }
             break;
+            case KeyEvent.KEYCODE_PLUS:{
+                sendModel = new KeyPlusSendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
+            }break;
             default:{
 
             }break;

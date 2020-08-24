@@ -1,7 +1,6 @@
 package com.newline.serialport.model.recevier;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.newline.serialport.setting.HHTDeviceManager;
 import java.lang.ref.WeakReference;
@@ -53,6 +52,15 @@ public abstract class RecevierSerialPortModel {
             case SyncStatusRecevierModel.CONTROLLING_CODE:{
                 return new SyncStatusRecevierModel(hhtDeviceManager);
             }
+            case OttVersionRecevierModel.CONTROLLING_CODE:{
+                return new OttVersionRecevierModel(hhtDeviceManager);
+            }
+            case SerialNumberRecevierModel.CONTROLLING_CODE:{
+                return new SerialNumberRecevierModel(hhtDeviceManager);
+            }
+            case ModelTypeRecevierModel.CONTROLLING_CODE:{
+                return new ModelTypeRecevierModel(hhtDeviceManager);
+            }
             default:{
 
             }break;
@@ -95,13 +103,33 @@ public abstract class RecevierSerialPortModel {
      * @param targetCode
      * @return
      */
-    private static String catchKeyValue(String targetCode) {
+    protected static String catchKeyValue(String targetCode) {
         String value = targetCode.substring(27, 29);
         return value;
     }
 
-    private static int hexStringtoInt(String hexCount){
+    protected static int hexStringtoInt(String hexCount){
         BigInteger big = new BigInteger(hexCount, 16);
         return big.intValue();
+    }
+
+
+    /**
+     * 字符串转换成为16进制(无需Unicode编码)
+     * @param str
+     * @return
+     */
+    protected static String str2HexStr(String str) {
+        char[] chars = "0123456789ABCDEF".toCharArray();
+        StringBuilder sb = new StringBuilder("");
+        byte[] bs = str.getBytes();
+        int bit;
+        for (int i = 0; i < bs.length; i++) {
+            bit = (bs[i] & 0x0f0) >> 4;
+            sb.append(chars[bit]);
+            bit = bs[i] & 0x0f;
+            sb.append(chars[bit]);
+        }
+        return sb.toString().trim();
     }
 }

@@ -9,27 +9,26 @@ import com.newline.serialport.utils.NewlineDeviceUtils;
  * @name serialport
  * @email momo.weiye@gmail.com
  * @time 2020/8/24 10:21
- * @describe  设备版控信息
+ * @describe
  */
-public class ModelTypeRecevierModel extends HexStringRecevierModel {
+public class FullPackageVersionRecevierModel extends HexStringRecevierModel {
 
-    public static final String CONTROLLING_CODE = "7F 08 99 A2 B3 C4 02 FF 0A 7E CF";
+    public static final String CONTROLLING_CODE = "7F 08 99 A2 B3 C4 02 FF 0A 8A CF";
 
 
-    public ModelTypeRecevierModel(HHTDeviceManager hhtDeviceManager) {
+    public FullPackageVersionRecevierModel(HHTDeviceManager hhtDeviceManager) {
         super(hhtDeviceManager);
     }
 
 
-
     @Override
     String getRawData() {
-        //版控信息
-        return NewlineDeviceUtils.getSystemInfo();
+        //集成包版本号
+        return NewlineDeviceUtils.getFullPackageVersion();
     }
 
     @Override
     String getQueryType() {
-        return QUERY_TYPE_MODEL_TYPE;
+        return QUERY_TYPE_FULL_PCAKAGE_VERSION;
     }
 }

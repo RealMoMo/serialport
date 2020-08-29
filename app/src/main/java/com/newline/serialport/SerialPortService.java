@@ -16,6 +16,7 @@ import com.newline.serialport.dao.observer.SerialPortContentObserver;
 import com.newline.serialport.model.KeyEventBean;
 import com.newline.serialport.model.PersisentStatus;
 import com.newline.serialport.model.recevier.RecevierSerialPortModel;
+import com.newline.serialport.model.recevier.SerialNumberRecevierModel;
 import com.newline.serialport.model.recevier.SyncStatusRecevierModel;
 import com.newline.serialport.model.send.DelSendModel;
 import com.newline.serialport.model.send.DownSendModel;
@@ -105,6 +106,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
         serialPortModelPool = SerialPortModelPool.getInstance();
 
     }
+
 
     /**
      * 初始化设备持久化状态信息
@@ -299,9 +301,9 @@ public class SerialPortService extends Service implements SerialPortContentObser
                 sendModel = new ZoomOutSendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
             }
             break;
-            case KeyEvent.KEYCODE_PLUS:{
-                sendModel = new KeyPlusSendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
-            }break;
+//            case KeyEvent.KEYCODE_PLUS:{
+//                sendModel = new KeyPlusSendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
+//            }break;
             default: {
 
             }
@@ -350,9 +352,9 @@ public class SerialPortService extends Service implements SerialPortContentObser
                 sendModel = new ZoomOutSendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
             }
             break;
-            case KeyEvent.KEYCODE_PLUS:{
-                sendModel = new KeyPlusSendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
-            }break;
+//            case KeyEvent.KEYCODE_PLUS:{
+//                sendModel = new KeyPlusSendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
+//            }break;
             default:{
 
             }break;

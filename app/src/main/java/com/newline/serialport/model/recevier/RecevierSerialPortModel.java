@@ -18,7 +18,14 @@ public abstract class RecevierSerialPortModel {
         this.hhtDeviceManager = new WeakReference(hhtDeviceManager);
     }
 
-    //Set xx 未处理
+    /**
+     * 解析并获取接收串口数据实体类
+     * @param controllingCode
+     * @param size
+     * @param context
+     * @param hhtDeviceManager
+     * @return
+     */
     public static RecevierSerialPortModel getSerialPortModelByControllingCode(String controllingCode, int size, Context context, HHTDeviceManager hhtDeviceManager) {
         char[] codes = controllingCode.toCharArray();
         if (codes[0] == '7' && codes[1] == 'F') {
@@ -52,14 +59,17 @@ public abstract class RecevierSerialPortModel {
             case SyncStatusRecevierModel.CONTROLLING_CODE:{
                 return new SyncStatusRecevierModel(hhtDeviceManager);
             }
-            case OttVersionRecevierModel.CONTROLLING_CODE:{
-                return new OttVersionRecevierModel(hhtDeviceManager);
+            case ProductVersionRecevierModel.CONTROLLING_CODE:{
+                return new ProductVersionRecevierModel(hhtDeviceManager);
             }
             case SerialNumberRecevierModel.CONTROLLING_CODE:{
                 return new SerialNumberRecevierModel(hhtDeviceManager);
             }
             case ModelTypeRecevierModel.CONTROLLING_CODE:{
                 return new ModelTypeRecevierModel(hhtDeviceManager);
+            }
+            case FullPackageVersionRecevierModel.CONTROLLING_CODE:{
+                return new FullPackageVersionRecevierModel(hhtDeviceManager);
             }
             default:{
 
@@ -72,6 +82,18 @@ public abstract class RecevierSerialPortModel {
             }
         }
 
+        //TODO 处理特殊指令
+        return getSpecModel(targetCode,hhtDeviceManager);
+
+//        return null;
+    }
+
+    private static RecevierSerialPortModel getSpecModel(String rawData,HHTDeviceManager hhtDeviceManager){
+        Object matchInfo = null;
+        matchInfo = UpgradeRecevierModel.match(rawData);
+        if(matchInfo!= null){
+            return new UpgradeRecevierModel(hhtDeviceManager, (String) matchInfo);
+        }
         return null;
     }
 
@@ -131,5 +153,24 @@ public abstract class RecevierSerialPortModel {
             sb.append(chars[bit]);
         }
         return sb.toString().trim();
+    }
+
+
+    /**
+     * 16进制直接转换成为字符串(无需Unicode解码)
+     * @param hexStr
+     * @return
+     */
+    protected static String hexStr2Str(String hexStr) {
+        String str = "0123456789ABCDEF";
+        char[] hexs = hexStr.toCharArray();
+        byte[] bytes = new byte[hexStr.length() / 2];
+        int n;
+        for (int i = 0; i < bytes.length; i++) {
+            n = str.indexOf(hexs[2 * i]) * 16;
+            n += str.indexOf(hexs[2 * i + 1]);
+            bytes[i] = (byte) (n & 0xff);
+        }
+        return new String(bytes);
     }
 }

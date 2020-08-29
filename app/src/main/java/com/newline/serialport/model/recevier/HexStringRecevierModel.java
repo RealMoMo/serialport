@@ -1,6 +1,7 @@
 package com.newline.serialport.model.recevier;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.newline.serialport.setting.HHTDeviceManager;
 
@@ -19,12 +20,14 @@ public abstract class HexStringRecevierModel extends RecevierSerialPortModel {
     protected static final String QUERY_TYPE_SERIAL_NUMBER = "7C";
     //查询Model机型
     protected static final String QUERY_TYPE_MODEL_TYPE = "7E";
+    //查询集成包版本号
+    protected static final String QUERY_TYPE_FULL_PCAKAGE_VERSION = "8A";
 
     //1.包头格式
     private static final String PACKAGE_HEADER = "7F";
     /**
-     *  2.数据{@link #dataHex}的长度N+7
-     *  例如： dataHex = "53 54 12 34"  length = 8/2 + 7 = 11 转16进制,最终lengthHex = 0B
+     *  2.数据{@link #dataHex}的长度N/2 -1 + 7
+     *  例如： dataHex = "53 54 12 34"  length = 8/2 -1 + 7 = 11 转16进制,最终lengthHex = 0B
      */
     protected String lengthHex;
     //3.查询指令格式
@@ -33,8 +36,8 @@ public abstract class HexStringRecevierModel extends RecevierSerialPortModel {
     protected String queryType;
     //5.数据的内容
     protected String dataHex;
-    //6.校验信息（1+2+3+4+5）
-    private String checkSum;
+    //6.校验信息
+    private static final String CHECK_SUM = "01";
     //7.数据包结束格式
     private static final String PACKAGE_END = "CF";
 
@@ -45,12 +48,17 @@ public abstract class HexStringRecevierModel extends RecevierSerialPortModel {
     @Override
     public void action() {
             dataHex = RecevierSerialPortModel.str2HexStr(getRawData());
-            lengthHex = Integer.toHexString(dataHex.length()/2+7);
-            checkSum = new StringBuffer().append(PACKAGE_HEADER)
-                    .append(lengthHex)
-                    .append(TYPE_QUERY_DATA)
-                    .append(queryType)
-                    .append(dataHex).toString();
+            queryType = getQueryType();
+            lengthHex = Integer.toHexString(dataHex.length()/2 -1+7);
+            if(lengthHex.length() %2 == 1){
+                //需前面补0
+                lengthHex =  "0"+ lengthHex;
+            }
+//            checkSum = new StringBuffer().append(PACKAGE_HEADER)
+//                    .append(lengthHex)
+//                    .append(TYPE_QUERY_DATA)
+//                    .append(queryType)
+//                    .append(dataHex).toString();
     }
 
     /**
@@ -65,8 +73,9 @@ public abstract class HexStringRecevierModel extends RecevierSerialPortModel {
                .append(TYPE_QUERY_DATA)
                .append(queryType)
                .append(dataHex)
-               .append(checkSum)
+               .append(CHECK_SUM)
                .append(PACKAGE_END);
+        Log.d("realmo","sb:"+sb.toString());
        return sb.toString();
     }
 

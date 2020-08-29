@@ -1,6 +1,9 @@
 package com.newline.serialport.model.recevier;
 
+import android.util.Log;
+
 import com.newline.serialport.setting.HHTDeviceManager;
+import com.newline.serialport.utils.NewlineDeviceUtils;
 
 /**
  * @author Realmo
@@ -22,8 +25,9 @@ public class SerialNumberRecevierModel extends HexStringRecevierModel {
 
     @Override
     String getRawData() {
-        //TODO 获取设备序列号
-        return "";
+        //获取设备序列号
+        Log.d("realmo","sn:"+NewlineDeviceUtils.getSerialNumber());
+        return NewlineDeviceUtils.getSerialNumber();
     }
 
     @Override

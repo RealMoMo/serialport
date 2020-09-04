@@ -11,6 +11,7 @@ import com.newline.serialport.dao.SerialPortDAO;
 import com.newline.serialport.model.AndroidUpgradeBean;
 import com.newline.serialport.setting.HHTDeviceManager;
 import com.newline.serialport.utils.GlobalConfig;
+import com.newline.serialport.utils.NewlineDeviceUtils;
 
 import java.math.BigInteger;
 import java.util.Calendar;
@@ -22,11 +23,11 @@ import java.util.TimeZone;
  * @name serialport
  * @email momo.weiye@gmail.com
  * @time 2020/8/28 14:24
- * @describe 更新Android系统数据包
+ * @describe 更新集成包版本
  *
- * 中间部分的有用信息 -> 版本，型号(版控)，文件路径，文件的md5   中间用 ' | ' 分割
+ * 中间部分的有用信息 -> 版本号
  */
-public class UpgradeRecevierModel extends RecevierSerialPortModel {
+public class SetFullPackageVersionRecevierModel extends RecevierSerialPortModel {
 
     //1.包头格式
     private static final String PACKAGE_HEADER = "7F";
@@ -38,9 +39,9 @@ public class UpgradeRecevierModel extends RecevierSerialPortModel {
     //3.提供信息指令格式
     //private static final String TYPE_OFFER_DATA = "0B";
     //4.提供AndroidUpgrade数据类型
-    //private static String OFFER_TYPE = "7A";
+    //private static String OFFER_TYPE = "7C";
     //3+4
-    private static final String DATA_TYPE = "0B7A";
+    private static final String DATA_TYPE = "0B7C";
     //5.数据的内容
     //protected String dataHex;
     //6.校验信息
@@ -56,48 +57,27 @@ public class UpgradeRecevierModel extends RecevierSerialPortModel {
     private String realData;
 
 
-    private Context mContext;
-    private AndroidUpgradeBean androidUpgradeBean;
 
     /**
      *
      * @param hhtDeviceManager
      * @param rawData  传输过来的所有数据
      * @param dataHex  实际有用的数据
-     * @param context
      */
-    public UpgradeRecevierModel(HHTDeviceManager hhtDeviceManager, String rawData,String dataHex, Context context) {
+    public SetFullPackageVersionRecevierModel(HHTDeviceManager hhtDeviceManager, String rawData, String dataHex) {
         super(hhtDeviceManager);
         this.rawData = rawData;
         //16进制字符串 转换为普通字符串
         realData = RecevierSerialPortModel.hexStr2Str(dataHex);
-        //分隔符 |
-        String[] split = realData.split("\\|");
-        if(split.length == 4){
-            androidUpgradeBean = new AndroidUpgradeBean();
-            androidUpgradeBean.setVersion(split[0]);
-            androidUpgradeBean.setModel(split[1]);
-            androidUpgradeBean.setUpgradePackagePath(split[2]);
-            androidUpgradeBean.setMd5(split[3]);
-            androidUpgradeBean.setRecordTime(Calendar.getInstance(TimeZone.getTimeZone("Asia/Shanghai")).getTime().toString());
-        }
-        mContext = context;
+
+
     }
 
 
     @Override
     public void action() {
-        //通知Android系统，升级信息
-        if(androidUpgradeBean == null){
-            return ;
-        }
-        SharedPreferences sharedPreferences = mContext.getSharedPreferences(GlobalConfig.SP_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor edit = sharedPreferences.edit();
-        edit.putString(GlobalConfig.KEY_SP_ANDROID_UPGRADE_INFO,androidUpgradeBean.parseToJSONObject().toString());
-        edit.commit();
 
-        putDataChangeMessage();
-
+        NewlineDeviceUtils.setFullPackageVersion(realData);
     }
 
     @Override
@@ -106,23 +86,10 @@ public class UpgradeRecevierModel extends RecevierSerialPortModel {
     }
 
 
-    /**
-     * 通知数据更新
-     */
-    private void putDataChangeMessage(){
-        try {
-            ContentValues conValue = new ContentValues();
-            conValue.put(SerialPortDAO.NAME, SerialPortDAO.KEY_ANDROID_UPGRADE);
-            conValue.put(SerialPortDAO.VALUE, "");
-            mContext.getContentResolver().update(Uri.withAppendedPath(SerialPortDAO.SERIAL_PORT_URI, SerialPortDAO.KEY_ANDROID_UPGRADE), conValue, null, null);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     /**
-     * 数据是否匹配Android升级包 格式
+     * 数据是否匹配 格式
      * @param rawData
      * @return 若匹配，返回有用信息。若不匹配，则返回null
      */

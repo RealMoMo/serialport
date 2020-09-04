@@ -51,5 +51,14 @@ public class NewlineDeviceUtils {
 
 
 
+    /**
+     * 设置集成包版本号
+     */
+    public static void setFullPackageVersion(String version){
+        SystemPropertiesUtils.setProperty("persist.product.version", version);
+    }
+
+
+
 
 }

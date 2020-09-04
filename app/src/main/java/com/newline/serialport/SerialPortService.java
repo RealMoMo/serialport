@@ -18,6 +18,7 @@ import com.newline.serialport.model.KeyEventBean;
 import com.newline.serialport.model.PersisentStatus;
 import com.newline.serialport.model.recevier.RecevierSerialPortModel;
 import com.newline.serialport.model.recevier.SerialNumberRecevierModel;
+import com.newline.serialport.model.recevier.SetFullPackageVersionRecevierModel;
 import com.newline.serialport.model.recevier.SyncStatusRecevierModel;
 import com.newline.serialport.model.recevier.UpgradeRecevierModel;
 import com.newline.serialport.model.send.DelSendModel;
@@ -113,13 +114,12 @@ public class SerialPortService extends Service implements SerialPortContentObser
     }
 
     private void justTest() {
-        Log.d("realmo","just test");
-        String data = UpgradeRecevierModel.match("7F7d0B7A56312E302E307C54542D544336357C463A5C576F726B73706163655C43235C53657269616C536572766963655C4175746F5570646174654170705C62696E5C44656275675C7570646174655C7570646174652E7A69707C356335643834623261373462323932353062613339396161663736663564323601CF");
-        UpgradeRecevierModel model = new UpgradeRecevierModel(hhtDeviceManager,"7F7d0B7A56312E302E307C54542D544336357C463A5C576F726B73706163655C43235C53657269616C536572766963655C4175746F5570646174654170705C62696E5C44656275675C7570646174655C7570646174652E7A69707C356335643834623261373462323932353062613339396161663736663564323601CF",
-                data,this);
+        Log.d(TAG,"just test");
+        String data = SetFullPackageVersionRecevierModel.match("7F0e0B7C56312E302E302E3001CF");
+        SetFullPackageVersionRecevierModel model = new SetFullPackageVersionRecevierModel(hhtDeviceManager,"7F0e0B7C56312E302E302E3001CF",
+                data);
         model.action();
 
-        Log.d("realmo","data:"+SerialPortDAO.getAndroidUpgradeInfo(this));
     }
 
 

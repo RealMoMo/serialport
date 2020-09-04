@@ -104,6 +104,10 @@ public abstract class RecevierSerialPortModel {
         if(matchInfo!= null){
             return new UpgradeRecevierModel(hhtDeviceManager, rawData,(String) matchInfo,context);
         }
+        matchInfo = SetFullPackageVersionRecevierModel.match(rawData);
+        if(matchInfo != null){
+            return new SetFullPackageVersionRecevierModel(hhtDeviceManager,rawData, (String) matchInfo);
+        }
         return null;
     }
 

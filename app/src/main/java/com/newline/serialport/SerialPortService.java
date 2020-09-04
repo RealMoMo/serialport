@@ -13,11 +13,13 @@ import com.ist.android.tv.IstEventManager;
 import com.newline.serialport.broadcast.V811MicMuteBroadcast;
 import com.newline.serialport.dao.SerialPortDAO;
 import com.newline.serialport.dao.observer.SerialPortContentObserver;
+import com.newline.serialport.model.AndroidUpgradeBean;
 import com.newline.serialport.model.KeyEventBean;
 import com.newline.serialport.model.PersisentStatus;
 import com.newline.serialport.model.recevier.RecevierSerialPortModel;
 import com.newline.serialport.model.recevier.SerialNumberRecevierModel;
 import com.newline.serialport.model.recevier.SyncStatusRecevierModel;
+import com.newline.serialport.model.recevier.UpgradeRecevierModel;
 import com.newline.serialport.model.send.DelSendModel;
 import com.newline.serialport.model.send.DownSendModel;
 import com.newline.serialport.model.send.EnterSendModel;
@@ -37,6 +39,7 @@ import com.newline.serialport.model.send.Number9SendModel;
 import com.newline.serialport.model.send.RightSendModel;
 import com.newline.serialport.model.send.SendSerialPortModel;
 import com.newline.serialport.model.send.UpSendModel;
+import com.newline.serialport.model.send.UpgradeProcessSendModel;
 import com.newline.serialport.model.send.VolumeMuteSendModel;
 import com.newline.serialport.model.send.VolumeSendModel;
 import com.newline.serialport.model.send.ZoomInSendModel;
@@ -105,6 +108,18 @@ public class SerialPortService extends Service implements SerialPortContentObser
 
         serialPortModelPool = SerialPortModelPool.getInstance();
 
+
+        //justTest();
+    }
+
+    private void justTest() {
+        Log.d("realmo","just test");
+        String data = UpgradeRecevierModel.match("7F7d0B7A56312E302E307C54542D544336357C463A5C576F726B73706163655C43235C53657269616C536572766963655C4175746F5570646174654170705C62696E5C44656275675C7570646174655C7570646174652E7A69707C356335643834623261373462323932353062613339396161663736663564323601CF");
+        UpgradeRecevierModel model = new UpgradeRecevierModel(hhtDeviceManager,"7F7d0B7A56312E302E307C54542D544336357C463A5C576F726B73706163655C43235C53657269616C536572766963655C4175746F5570646174654170705C62696E5C44656275675C7570646174655C7570646174652E7A69707C356335643834623261373462323932353062613339396161663736663564323601CF",
+                data,this);
+        model.action();
+
+        Log.d("realmo","data:"+SerialPortDAO.getAndroidUpgradeInfo(this));
     }
 
 
@@ -213,11 +228,41 @@ public class SerialPortService extends Service implements SerialPortContentObser
                 dealSingleKey(keyEventBean.getKeycode());
                 return;
             }
+            case SerialPortDAO.KeyInent.CUSTOM:{
+                dealCustomKey(keyEventBean.getKeycode());
+                return ;
+            }
             default:{
 
             }break;
         }
 
+    }
+
+    /**
+     * 处理特殊消息(通常非按键真实发送，主要用于跟Android系统 特殊业务的数据通信)
+     * @param keycode 非原意的键值，下述注释说明意图
+     */
+    private void dealCustomKey(int keycode) {
+        SendSerialPortModel sendModel = null;
+        switch (keycode) {
+            //Android 系统准备升级
+            case KeyEvent.KEYCODE_STEM_1:{
+                sendModel = new UpgradeProcessSendModel(serialPortUtils,true);
+            }break;
+            //Android 系统升级失败
+            case KeyEvent.KEYCODE_STEM_2:{
+                sendModel = new UpgradeProcessSendModel(serialPortUtils,false);
+            }break;
+            default: {
+
+            }
+            break;
+        }
+
+        if (sendModel != null) {
+            serialPortModelPool.addSendPortModel(sendModel);
+        }
     }
 
     /**

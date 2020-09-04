@@ -3,6 +3,7 @@ package com.newline.serialport.dao.observer;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.os.Handler;
+import android.util.Log;
 
 import com.newline.serialport.dao.KeyEventDAO;
 import com.newline.serialport.dao.SerialPortDAO;
@@ -17,7 +18,7 @@ import java.util.List;
  * @name serialport
  * @email momo.weiye@gmail.com
  * @time 2020/7/16 16:25
- * @describe
+ * @describe 监听此数据库{@link com.newline.serialport.dao.SerialPortContentProvider}，数据变化
  */
 public class SerialPortContentObserver extends ContentObserver {
 

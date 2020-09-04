@@ -6,6 +6,9 @@ import com.newline.serialport.setting.HHTDeviceManager;
 import java.lang.ref.WeakReference;
 import java.math.BigInteger;
 
+/**
+ * 接收串口数据基类
+ */
 public abstract class RecevierSerialPortModel {
 
     private static String targetCode = "";
@@ -82,24 +85,37 @@ public abstract class RecevierSerialPortModel {
             }
         }
 
-        //TODO 处理特殊指令
-        return getSpecModel(targetCode,hhtDeviceManager);
+        //处理特殊指令
+        return getSpecModel(targetCode,hhtDeviceManager,context);
 
 //        return null;
     }
 
-    private static RecevierSerialPortModel getSpecModel(String rawData,HHTDeviceManager hhtDeviceManager){
+    /**
+     * 解析是否特殊串口数据
+     * @param rawData
+     * @param hhtDeviceManager
+     * @param context
+     * @return 解析数据匹配，则返回对应串口数据实体类。否则，返回null
+     */
+    private static RecevierSerialPortModel getSpecModel(String rawData,HHTDeviceManager hhtDeviceManager,Context context){
         Object matchInfo = null;
         matchInfo = UpgradeRecevierModel.match(rawData);
         if(matchInfo!= null){
-            return new UpgradeRecevierModel(hhtDeviceManager, (String) matchInfo);
+            return new UpgradeRecevierModel(hhtDeviceManager, rawData,(String) matchInfo,context);
         }
         return null;
     }
 
-
+    /**
+     * 处理
+     */
     public abstract void action();
 
+    /**
+     * 回复数据
+     * @return
+     */
     public abstract String retryContent();
 
 

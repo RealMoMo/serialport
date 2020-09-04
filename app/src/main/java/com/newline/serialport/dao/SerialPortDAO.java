@@ -3,10 +3,12 @@ package com.newline.serialport.dao;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.net.Uri;
 import android.support.annotation.IntDef;
 import android.support.annotation.Keep;
+import android.support.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -39,13 +41,17 @@ public class SerialPortDAO {
     @Keep
     public static final String KEY_KEYCODE=  "keycode";
 
+    @Keep
+    public static final String KEY_ANDROID_UPGRADE = "android_upgrade";
+
 
 
     /**
      * 按键事件意图类型
      */
     @Keep
-    @IntDef({KeyInent.DOWN, KeyInent.REPEAT, KeyInent.UP,KeyInent.PRESS, KeyInent.LONG_PRESS})
+    @IntDef({KeyInent.DOWN, KeyInent.REPEAT, KeyInent.UP,
+            KeyInent.PRESS, KeyInent.LONG_PRESS,KeyInent.CUSTOM})
     @Retention(RetentionPolicy.SOURCE)
     public @interface KeyInent {
         @Keep
@@ -58,6 +64,9 @@ public class SerialPortDAO {
         int PRESS = DOWN+3;
         @Keep
         int LONG_PRESS = DOWN+4;
+        //自定义类型，用于特殊业务处理
+        @Keep
+        int CUSTOM = DOWN +5;
     }
 
     /**
@@ -82,6 +91,16 @@ public class SerialPortDAO {
         }
     }
 
+    /**
+     * 获取Anroid升级信息
+     * @param context
+     * @return Anroid升级的字符信息,可实际通过json格式转为 {@link com.newline.serialport.model.AndroidUpgradeBean}，若没存储则返回Null
+     */
+    @Keep
+    public static @Nullable String getAndroidUpgradeInfo(Context context){
+       return getString(getUriFor(SERIAL_PORT_URI,null),context.getContentResolver(),KEY_ANDROID_UPGRADE);
+    }
+
 
 
     @Keep
@@ -99,6 +118,37 @@ public class SerialPortDAO {
             return false;
         }
 
+    }
+
+
+
+    @Keep
+    private static @Nullable String getString(Uri uri, ContentResolver resolver, String name) {
+        Cursor cursor = resolver.query(uri, new String[]{name}, null, null, null);
+        String value = null;
+        if (cursor == null || cursor.getCount() == 0) {
+            return value;
+        }
+        cursor.moveToFirst();
+        value = cursor.getString(cursor.getColumnIndex(name));
+        cursor.close();
+
+        return value;
+    }
+
+
+    @Keep
+    private static Uri getUriFor(Uri uri, @Nullable String name) {
+
+        if (name == null) {
+            return uri;
+        }
+
+        if (name.isEmpty()) {
+            return uri;
+        }
+
+        return Uri.withAppendedPath(uri, name);
     }
 }
 

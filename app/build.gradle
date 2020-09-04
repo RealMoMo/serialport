@@ -30,8 +30,8 @@ android {
         applicationId "com.newline.serialport"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 14
-        versionName "1.2.31"
+        versionCode 15
+        versionName "1.2.32"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
@@ -68,9 +68,9 @@ android {
     //多渠道配置
     flavorDimensions "default"
     productFlavors{
-        mstar{
-            signingConfig signingConfigs.releaseConfig
-        }
+//        mstar{
+//            signingConfig signingConfigs.releaseConfig
+//        }
         v811{
             signingConfig signingConfigs.v811
         }

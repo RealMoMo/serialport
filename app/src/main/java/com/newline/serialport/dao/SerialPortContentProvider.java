@@ -2,13 +2,19 @@ package com.newline.serialport.dao;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.newline.serialport.model.KeyEventBean;
+import com.newline.serialport.model.recevier.UpgradeRecevierModel;
+import com.newline.serialport.utils.GlobalConfig;
+
+import java.util.Arrays;
 
 /**
  * @author Realmo
@@ -30,7 +36,30 @@ public class SerialPortContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        return null;
+        synchronized (lock){
+            if(projection== null){
+                return null;
+            }
+            if(projection.length<1){
+                return null;
+            }
+            String key = projection[0];
+            if(key == null){
+                return null;
+            }
+            switch (key){
+                case SerialPortDAO.KEY_ANDROID_UPGRADE:{
+                    MatrixCursor matrixCursor = new MatrixCursor(projection,1);
+                    matrixCursor.addRow(new String[]{getContext().getSharedPreferences(GlobalConfig.SP_NAME, Context.MODE_PRIVATE).getString(GlobalConfig.KEY_SP_ANDROID_UPGRADE_INFO,null)});
+                    matrixCursor.setNotificationUri(getContext().getContentResolver(),uri);
+                    return matrixCursor;
+                }
+                default:{
+                    return null;
+                }
+            }
+        }
+
     }
 
     @Nullable
@@ -61,7 +90,15 @@ public class SerialPortContentProvider extends ContentProvider {
                 case SerialPortDAO.KEY_KEYCODE:{
                     KeyEventBean keyEventBean = new KeyEventBean((int)values.get(SerialPortDAO.VALUE),(int)values.get(SerialPortDAO.KEY_INTENT));
                     KeyEventDAO.keyCodeQueue.add(keyEventBean);
-//                    KeyEventDAO.keyCodeQueue.add((Integer) values.get(SerialPortDAO.VALUE));
+                    getContext().getContentResolver().notifyChange(Uri.withAppendedPath(uri,key), null);
+                    return 1;
+                }
+                case SerialPortDAO.KEY_ANDROID_UPGRADE:{
+                    /**
+                     *  实际存储{@link UpgradeRecevierModel#action()} 在此处理
+                     *  此处只负责通知数据有变化
+                     */
+
                     getContext().getContentResolver().notifyChange(Uri.withAppendedPath(uri,key), null);
                     return 1;
                 }

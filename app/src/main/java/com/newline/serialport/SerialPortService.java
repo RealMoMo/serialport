@@ -21,6 +21,7 @@ import com.newline.serialport.model.recevier.SerialNumberRecevierModel;
 import com.newline.serialport.model.recevier.SetFullPackageVersionRecevierModel;
 import com.newline.serialport.model.recevier.SyncStatusRecevierModel;
 import com.newline.serialport.model.recevier.UpgradeRecevierModel;
+import com.newline.serialport.model.recevier.V811WakeUpRecevierModel;
 import com.newline.serialport.model.send.DelSendModel;
 import com.newline.serialport.model.send.DownSendModel;
 import com.newline.serialport.model.send.EnterSendModel;
@@ -115,10 +116,8 @@ public class SerialPortService extends Service implements SerialPortContentObser
 
     private void justTest() {
         Log.d(TAG,"just test");
-        String data = SetFullPackageVersionRecevierModel.match("7F0e0B7C56312E302E302E3001CF");
-        SetFullPackageVersionRecevierModel model = new SetFullPackageVersionRecevierModel(hhtDeviceManager,"7F0e0B7C56312E302E302E3001CF",
-                data);
-        model.action();
+        V811WakeUpRecevierModel wakeUpRecevierModel = new V811WakeUpRecevierModel(hhtDeviceManager,this);
+        wakeUpRecevierModel.action();
 
     }
 

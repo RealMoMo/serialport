@@ -1,6 +1,12 @@
 package com.newline.serialport.utils;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.UserHandle;
+
 import com.ist.android.tv.IstBoardInfo;
+import com.ist.android.tv.IstCommonManager;
+import com.ist.android.tv.util.IstConstant;
 import com.newline.serialport.setting.utils.SystemPropertiesUtils;
 
 /**
@@ -56,6 +62,49 @@ public class NewlineDeviceUtils {
      */
     public static void setFullPackageVersion(String version){
         SystemPropertiesUtils.setProperty("persist.product.version", version);
+    }
+
+
+    /**
+     * 唤醒Android大屏
+     * @param context
+     */
+    public static void wakeupDevice(Context context){
+        if (IstCommonManager.getInstance().isSystemSleep()) {
+            Intent intent = new Intent(IstConstant.ACTION_SYSTEM_WAKE);
+            context.sendBroadcast(intent);
+        }
+    }
+
+
+    /**
+     * 息屏Android
+     * @param context
+     */
+    public static void sleepDevice(Context context){
+        if (!IstCommonManager.getInstance().isSystemSleep()) {
+            Intent intent = new Intent(IstConstant.ACTION_SYSTEM_SLEEP);
+            context.sendBroadcast(intent);
+        }
+    }
+
+    /**
+     * 通知关机
+     * @param context
+     */
+    public static void sendPowerOffMsg(Context context){
+        Intent intent = new Intent("com.hht.tencent_shutdown");
+        context.sendBroadcast(intent);
+    }
+
+
+    /**
+     * 通知重启
+     * @param context
+     */
+    public static void sendRebootMsg(Context context){
+        Intent intent = new Intent("com.hht.tencent_reboot");
+        context.sendBroadcast(intent);
     }
 
 

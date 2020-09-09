@@ -74,6 +74,18 @@ public abstract class RecevierSerialPortModel {
             case FullPackageVersionRecevierModel.CONTROLLING_CODE:{
                 return new FullPackageVersionRecevierModel(hhtDeviceManager);
             }
+            case V811PowerOffRecevierModel.CONTROLLING_CODE:{
+                return new V811PowerOffRecevierModel(hhtDeviceManager,context);
+            }
+            case V811RebootRecevierModel.CONTROLLING_CODE:{
+                return new V811RebootRecevierModel(hhtDeviceManager,context);
+            }
+            case V811WakeUpRecevierModel.CONTROLLING_CODE:{
+                return new V811WakeUpRecevierModel(hhtDeviceManager,context);
+            }
+            case V811SleepRecevierModel.CONTROLLING_CODE:{
+                return new V811SleepRecevierModel(hhtDeviceManager,context);
+            }
             default:{
 
             }break;

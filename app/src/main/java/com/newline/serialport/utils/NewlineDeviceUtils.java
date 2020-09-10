@@ -69,7 +69,7 @@ public class NewlineDeviceUtils {
      * @return 获取大屏型号
      */
     public static String getModelType(){
-        return (String) SystemPropertiesUtils.getProperty("ro.product.model", "");
+        return (String) SystemPropertiesUtils.getProperty("persist.sys.product.model", "");
     }
 
 

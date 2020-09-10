@@ -272,7 +272,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
         SendSerialPortModel sendModel = null;
         switch (keycode) {
             case KeyEvent.KEYCODE_0: {
-                sendModel = new Number0SendModel(serialPortUtils);
+                sendModel = new Number0SendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
             }
             break;
             case KeyEvent.KEYCODE_1: {
@@ -367,6 +367,10 @@ public class SerialPortService extends Service implements SerialPortContentObser
     private void dealRepeatKey(int keycode){
         SendSerialPortModel sendModel = null;
         switch (keycode){
+            case KeyEvent.KEYCODE_0: {
+                sendModel = new Number0SendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
+            }
+            break;
             case KeyEvent.KEYCODE_DPAD_UP: {
                 sendModel = new UpSendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
             }
@@ -396,9 +400,9 @@ public class SerialPortService extends Service implements SerialPortContentObser
                 sendModel = new ZoomOutSendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
             }
             break;
-//            case KeyEvent.KEYCODE_PLUS:{
-//                sendModel = new KeyPlusSendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
-//            }break;
+            case KeyEvent.KEYCODE_PLUS:{
+                sendModel = new KeyPlusSendModel(serialPortUtils,SerialPortDAO.KeyInent.REPEAT);
+            }break;
             default:{
 
             }break;

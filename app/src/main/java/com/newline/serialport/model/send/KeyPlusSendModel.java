@@ -9,7 +9,9 @@ import com.newline.serialport.SerialPortUtils;
  * @email momo.weiye@gmail.com
  * @time 2020/7/20 17:38
  * @describe
+ * number 0 repeat代替 + 按键事件
  */
+@Deprecated
 public class KeyPlusSendModel extends BaseKeyEventSendModel {
 
 

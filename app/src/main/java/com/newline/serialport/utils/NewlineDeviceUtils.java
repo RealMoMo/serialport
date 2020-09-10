@@ -33,7 +33,7 @@ public class NewlineDeviceUtils {
      *
      * @return 版控信息
      */
-    public static String getSystemInfo(){
+    public static String getVersionControlInfo(){
         return (String) SystemPropertiesUtils.getProperty("persist.sys.versionCustomer", "");
     }
 
@@ -62,6 +62,14 @@ public class NewlineDeviceUtils {
      */
     public static void setFullPackageVersion(String version){
         SystemPropertiesUtils.setProperty("persist.product.version", version);
+    }
+
+    /**
+     *
+     * @return 获取大屏型号
+     */
+    public static String getModelType(){
+        return (String) SystemPropertiesUtils.getProperty("ro.product.model", "");
     }
 
 

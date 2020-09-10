@@ -68,11 +68,14 @@ public abstract class RecevierSerialPortModel {
             case SerialNumberRecevierModel.CONTROLLING_CODE:{
                 return new SerialNumberRecevierModel(hhtDeviceManager);
             }
-            case ModelTypeRecevierModel.CONTROLLING_CODE:{
-                return new ModelTypeRecevierModel(hhtDeviceManager);
+            case VersionControlRecevierModel.CONTROLLING_CODE:{
+                return new VersionControlRecevierModel(hhtDeviceManager);
             }
             case FullPackageVersionRecevierModel.CONTROLLING_CODE:{
                 return new FullPackageVersionRecevierModel(hhtDeviceManager);
+            }
+            case ProductModelRecevierModel.CONTROLLING_CODE:{
+                return new ProductModelRecevierModel(hhtDeviceManager);
             }
             case V811PowerOffRecevierModel.CONTROLLING_CODE:{
                 return new V811PowerOffRecevierModel(hhtDeviceManager,context);

@@ -18,10 +18,12 @@ public abstract class HexStringRecevierModel extends RecevierSerialPortModel {
     protected static final String QUERY_TYPE_OTT_VERSION = "7A";
     //查询设备序列号
     protected static final String QUERY_TYPE_SERIAL_NUMBER = "7C";
-    //查询Model机型
-    protected static final String QUERY_TYPE_MODEL_TYPE = "7E";
+    //查询版控信息
+    protected static final String QUERY_TYPE_VERSION_CONTROL_TYPE = "7E";
     //查询集成包版本号
     protected static final String QUERY_TYPE_FULL_PCAKAGE_VERSION = "8A";
+    //查询设备型号
+    protected static final String QUERY_TYPE_MODEL_VERSION = "8C";
 
     //1.包头格式
     private static final String PACKAGE_HEADER = "7F";

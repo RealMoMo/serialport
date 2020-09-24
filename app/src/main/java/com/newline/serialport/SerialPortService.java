@@ -487,6 +487,9 @@ public class SerialPortService extends Service implements SerialPortContentObser
         unregisterReceiver(v811MicMuteBroadcast);
         serialPortModelPool.release();
         v811MicMuteBroadcast.release();
+
+        Intent intent = new Intent(this,SerialPortService.class);
+        startService(intent);
     }
 
 

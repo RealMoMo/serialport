@@ -32,11 +32,15 @@ public class SerialPortModelPool {
                 clearRetryData();
                 startNextSend();
             }else{
-                retryTimes++;
-                currentModel.sendContent();
-                Log.d(TAG,"retry:"+retryTimes);
-                Log.d(TAG,"retry content:"+currentModel.getSendContent());
-                sendEmptyMessageDelayed(MSG_RETRY_SEND,SEND_INTERVAL_TIMEMILLS);
+                if(currentModel==null){
+                   startNextSend();
+                }else{
+                    retryTimes++;
+                    currentModel.sendContent();
+                    Log.d(TAG,"retry:"+retryTimes);
+                    Log.d(TAG,"retry content:"+currentModel.getSendContent());
+                    sendEmptyMessageDelayed(MSG_RETRY_SEND,SEND_INTERVAL_TIMEMILLS);
+                }
             }
         }
     };

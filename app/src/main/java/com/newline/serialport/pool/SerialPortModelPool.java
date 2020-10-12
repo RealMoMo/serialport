@@ -33,13 +33,13 @@ public class SerialPortModelPool {
                 startNextSend();
             }else{
                 if(currentModel==null){
+                    clearRetryData();
                    startNextSend();
                 }else{
-                    retryTimes++;
-                    currentModel.sendContent();
-                    Log.d(TAG,"retry:"+retryTimes);
-                    Log.d(TAG,"retry content:"+currentModel.getSendContent());
-                    sendEmptyMessageDelayed(MSG_RETRY_SEND,SEND_INTERVAL_TIMEMILLS);
+                    retrySend();
+//                    retryTimes++;
+//                    currentModel.sendContent();
+//                    sendEmptyMessageDelayed(MSG_RETRY_SEND,SEND_INTERVAL_TIMEMILLS);
                 }
             }
         }
@@ -94,17 +94,14 @@ public class SerialPortModelPool {
         currentContent = sendSerialPortModel.getSendContent();
         tryQueue.add(currentModel);
         mHandler.sendEmptyMessageDelayed(MSG_RETRY_SEND,SEND_INTERVAL_TIMEMILLS);
-        Log.d(TAG,"send count:"+count);
     }
 
     private void startNextSend(){
         tempModel = waitModelQueue.poll();
         if(tempModel == null){
-            Log.d(TAG,"end");
             mHandler.removeCallbacksAndMessages(null);
         }else{
             startSend(tempModel);
-            Log.d(TAG,"start next:"+currentModel.getSendContent());
         }
     }
 
@@ -115,6 +112,17 @@ public class SerialPortModelPool {
         tryQueue.clear();
         mHandler.removeMessages(MSG_RETRY_SEND);
         Log.d(TAG,"clear");
+    }
+
+    private synchronized void retrySend(){
+        if(currentModel ==null){
+            clearRetryData();
+            startNextSend();
+        }else{
+            retryTimes++;
+            currentModel.sendContent();
+            mHandler.sendEmptyMessageDelayed(MSG_RETRY_SEND,SEND_INTERVAL_TIMEMILLS);
+        }
     }
 
 }

@@ -100,7 +100,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
     @Override
     public void onCreate() {
         super.onCreate();
-
+        Log.d(TAG,"service oncreate");
         initSerialPortListener();
         initSerialPortDAOListener();
         initStandardAndroidStatusListener();
@@ -476,7 +476,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        Log.d(TAG,"service ondestory");
         handler.removeCallbacksAndMessages(null);
         handler = null;
 

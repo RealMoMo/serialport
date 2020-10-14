@@ -11,5 +11,8 @@ package com.newline.serialport.utils;
 public class GlobalConfig {
 
     public static final String SP_NAME = "sp_serialport";
+    //android系统升级
     public static final String KEY_SP_ANDROID_UPGRADE_INFO = "android_upgrade";
+    //只音频版升级
+    public static final String KEY_SP_ADUIO_UPGRADE_INFO = "aduio_upgrade";
 }

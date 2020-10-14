@@ -74,6 +74,14 @@ public class NewlineDeviceUtils {
 
 
     /**
+     *
+     * @return 获取音频版版本号
+     */
+    public static String getAudioVersion(){
+        return (String) SystemPropertiesUtils.getProperty("persist.cenpo.ver", "");
+    }
+
+    /**
      * 唤醒Android大屏
      * @param context
      */

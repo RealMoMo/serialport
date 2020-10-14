@@ -24,6 +24,8 @@ public abstract class HexStringRecevierModel extends RecevierSerialPortModel {
     protected static final String QUERY_TYPE_FULL_PCAKAGE_VERSION = "8A";
     //查询设备型号
     protected static final String QUERY_TYPE_MODEL_VERSION = "8C";
+    //查询音频版型号
+    protected static final String QUERY_TYPE_AUDIO_VERSION = "8E";
 
     //1.包头格式
     private static final String PACKAGE_HEADER = "7F";
@@ -77,7 +79,6 @@ public abstract class HexStringRecevierModel extends RecevierSerialPortModel {
                .append(dataHex)
                .append(CHECK_SUM)
                .append(PACKAGE_END);
-        Log.d("realmo","sb:"+sb.toString());
        return sb.toString();
     }
 

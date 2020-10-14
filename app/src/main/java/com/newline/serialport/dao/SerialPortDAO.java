@@ -43,6 +43,8 @@ public class SerialPortDAO {
 
     @Keep
     public static final String KEY_ANDROID_UPGRADE = "android_upgrade";
+    @Keep
+    public static final String KEY_AUDIO_UPGRADE = "audio_upgrade";
 
 
 
@@ -92,13 +94,24 @@ public class SerialPortDAO {
     }
 
     /**
-     * 获取Anroid升级信息
+     * 获取Android升级信息
      * @param context
      * @return Anroid升级的字符信息,可实际通过json格式转为 {@link com.newline.serialport.model.AndroidUpgradeBean}，若没存储则返回Null
      */
     @Keep
     public static @Nullable String getAndroidUpgradeInfo(Context context){
        return getString(getUriFor(SERIAL_PORT_URI,null),context.getContentResolver(),KEY_ANDROID_UPGRADE);
+    }
+
+
+    /**
+     * 获取音频版升级信息
+     * @param context
+     * @return Anroid升级的字符信息,可实际通过json格式转为 {@link com.newline.serialport.model.AudioVersionUpgradeBean}，若没存储则返回Null
+     */
+    @Keep
+    public static @Nullable String getAudioUpgradeInfo(Context context){
+        return getString(getUriFor(SERIAL_PORT_URI,null),context.getContentResolver(),KEY_AUDIO_UPGRADE);
     }
 
 

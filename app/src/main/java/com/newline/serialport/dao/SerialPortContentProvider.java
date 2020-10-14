@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.newline.serialport.model.KeyEventBean;
 import com.newline.serialport.model.recevier.UpgradeRecevierModel;
+import com.newline.serialport.model.recevier.UpgradeAudioVersionRecevierModel;
 import com.newline.serialport.utils.GlobalConfig;
 
 import java.util.Arrays;
@@ -51,6 +52,12 @@ public class SerialPortContentProvider extends ContentProvider {
                 case SerialPortDAO.KEY_ANDROID_UPGRADE:{
                     MatrixCursor matrixCursor = new MatrixCursor(projection,1);
                     matrixCursor.addRow(new String[]{getContext().getSharedPreferences(GlobalConfig.SP_NAME, Context.MODE_PRIVATE).getString(GlobalConfig.KEY_SP_ANDROID_UPGRADE_INFO,null)});
+                    matrixCursor.setNotificationUri(getContext().getContentResolver(),uri);
+                    return matrixCursor;
+                }
+                case SerialPortDAO.KEY_AUDIO_UPGRADE:{
+                    MatrixCursor matrixCursor = new MatrixCursor(projection,1);
+                    matrixCursor.addRow(new String[]{getContext().getSharedPreferences(GlobalConfig.SP_NAME, Context.MODE_PRIVATE).getString(GlobalConfig.KEY_SP_ADUIO_UPGRADE_INFO,null)});
                     matrixCursor.setNotificationUri(getContext().getContentResolver(),uri);
                     return matrixCursor;
                 }
@@ -96,6 +103,15 @@ public class SerialPortContentProvider extends ContentProvider {
                 case SerialPortDAO.KEY_ANDROID_UPGRADE:{
                     /**
                      *  实际存储{@link UpgradeRecevierModel#action()} 在此处理
+                     *  此处只负责通知数据有变化
+                     */
+
+                    getContext().getContentResolver().notifyChange(Uri.withAppendedPath(uri,key), null);
+                    return 1;
+                }
+                case SerialPortDAO.KEY_AUDIO_UPGRADE:{
+                    /**
+                     *  实际存储{@link UpgradeAudioVersionRecevierModel#action()} 在此处理
                      *  此处只负责通知数据有变化
                      */
 

@@ -2,6 +2,7 @@ package com.newline.serialport.model.recevier;
 
 import android.content.Context;
 
+import com.newline.serialport.model.AudioVersionUpgradeBean;
 import com.newline.serialport.setting.HHTDeviceManager;
 import java.lang.ref.WeakReference;
 import java.math.BigInteger;
@@ -89,6 +90,9 @@ public abstract class RecevierSerialPortModel {
             case V811SleepRecevierModel.CONTROLLING_CODE:{
                 return new V811SleepRecevierModel(hhtDeviceManager,context);
             }
+            case AudioVersionRecevierModel.CONTROLLING_CODE:{
+                return new AudioVersionRecevierModel(hhtDeviceManager);
+            }
             default:{
 
             }break;
@@ -122,6 +126,10 @@ public abstract class RecevierSerialPortModel {
         matchInfo = SetFullPackageVersionRecevierModel.match(rawData);
         if(matchInfo != null){
             return new SetFullPackageVersionRecevierModel(hhtDeviceManager,rawData, (String) matchInfo);
+        }
+        matchInfo = UpgradeAudioVersionRecevierModel.match(rawData);
+        if(matchInfo!= null){
+            return new UpgradeAudioVersionRecevierModel(hhtDeviceManager, rawData,(String) matchInfo,context);
         }
         return null;
     }

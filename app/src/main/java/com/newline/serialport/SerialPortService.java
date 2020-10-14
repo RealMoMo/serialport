@@ -13,15 +13,13 @@ import com.ist.android.tv.IstEventManager;
 import com.newline.serialport.broadcast.V811MicMuteBroadcast;
 import com.newline.serialport.dao.SerialPortDAO;
 import com.newline.serialport.dao.observer.SerialPortContentObserver;
-import com.newline.serialport.model.AndroidUpgradeBean;
 import com.newline.serialport.model.KeyEventBean;
 import com.newline.serialport.model.PersisentStatus;
 import com.newline.serialport.model.recevier.RecevierSerialPortModel;
-import com.newline.serialport.model.recevier.SerialNumberRecevierModel;
-import com.newline.serialport.model.recevier.SetFullPackageVersionRecevierModel;
 import com.newline.serialport.model.recevier.SyncStatusRecevierModel;
-import com.newline.serialport.model.recevier.UpgradeRecevierModel;
 import com.newline.serialport.model.recevier.V811WakeUpRecevierModel;
+import com.newline.serialport.model.send.AndroidUpgradeProcessSendModel;
+import com.newline.serialport.model.send.AudioUpgradeResultSendModel;
 import com.newline.serialport.model.send.DelSendModel;
 import com.newline.serialport.model.send.DownSendModel;
 import com.newline.serialport.model.send.EnterSendModel;
@@ -41,7 +39,6 @@ import com.newline.serialport.model.send.Number9SendModel;
 import com.newline.serialport.model.send.RightSendModel;
 import com.newline.serialport.model.send.SendSerialPortModel;
 import com.newline.serialport.model.send.UpSendModel;
-import com.newline.serialport.model.send.UpgradeProcessSendModel;
 import com.newline.serialport.model.send.VolumeMuteSendModel;
 import com.newline.serialport.model.send.VolumeSendModel;
 import com.newline.serialport.model.send.ZoomInSendModel;
@@ -247,11 +244,19 @@ public class SerialPortService extends Service implements SerialPortContentObser
         switch (keycode) {
             //Android 系统准备升级
             case KeyEvent.KEYCODE_STEM_1:{
-                sendModel = new UpgradeProcessSendModel(serialPortUtils,true);
+                sendModel = new AndroidUpgradeProcessSendModel(serialPortUtils,true);
             }break;
             //Android 系统升级失败
             case KeyEvent.KEYCODE_STEM_2:{
-                sendModel = new UpgradeProcessSendModel(serialPortUtils,false);
+                sendModel = new AndroidUpgradeProcessSendModel(serialPortUtils,false);
+            }break;
+            //音频版升级成功
+            case KeyEvent.KEYCODE_STEM_PRIMARY:{
+                sendModel = new AudioUpgradeResultSendModel(serialPortUtils,true);
+            }break;
+            //音频版升级失败
+            case KeyEvent.KEYCODE_STEM_3:{
+                sendModel = new AudioUpgradeResultSendModel(serialPortUtils,false);
             }break;
             default: {
 

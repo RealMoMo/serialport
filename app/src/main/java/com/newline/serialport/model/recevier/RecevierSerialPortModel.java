@@ -93,6 +93,9 @@ public abstract class RecevierSerialPortModel {
             case AudioVersionRecevierModel.CONTROLLING_CODE:{
                 return new AudioVersionRecevierModel(hhtDeviceManager);
             }
+            case AudioModelRecevierModel.CONTROLLING_CODE:{
+                return new AudioModelRecevierModel(hhtDeviceManager);
+            }
             default:{
 
             }break;

@@ -78,7 +78,33 @@ public class NewlineDeviceUtils {
      * @return 获取音频版版本号
      */
     public static String getAudioVersion(){
-        return (String) SystemPropertiesUtils.getProperty("persist.cenpo.ver", "");
+        //"CP-A08-HT01-V1.0.x"  型号+版本号
+        String fullInfo = (String) SystemPropertiesUtils.getProperty("persist.cenpo.ver", "");
+
+
+        int i = fullInfo.lastIndexOf("-");
+        if(i == -1){
+           return "";
+        }else{
+            return fullInfo.substring(i+1, fullInfo.length());
+        }
+    }
+
+    /**
+     *
+     * @return 获取音频版型号
+     */
+    public static String getAudioModel(){
+        //"CP-A08-HT01-V1.0.x"  型号+版本号
+        String fullInfo = (String) SystemPropertiesUtils.getProperty("persist.cenpo.ver", "");
+
+        int i = fullInfo.lastIndexOf("-");
+
+        if(i == -1){
+            return "";
+        }else{
+            return fullInfo.substring(0, i);
+        }
     }
 
     /**

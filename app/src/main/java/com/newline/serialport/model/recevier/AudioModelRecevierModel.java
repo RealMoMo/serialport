@@ -9,14 +9,14 @@ import com.newline.serialport.utils.NewlineDeviceUtils;
  * @name serialport
  * @email momo.weiye@gmail.com
  * @time 2020/8/24 10:21
- * @describe  音频版本信息
+ * @describe  音频版型号信息
  */
-public class AudioVersionRecevierModel extends HexStringRecevierModel {
+public class AudioModelRecevierModel extends HexStringRecevierModel {
 
-    public static final String CONTROLLING_CODE = "7F 08 99 A2 B3 C4 02 FF 0A 8E CF";
+    public static final String CONTROLLING_CODE = "7F 08 99 A2 B3 C4 02 FF 0A 9A CF";
 
 
-    public AudioVersionRecevierModel(HHTDeviceManager hhtDeviceManager) {
+    public AudioModelRecevierModel(HHTDeviceManager hhtDeviceManager) {
         super(hhtDeviceManager);
     }
 
@@ -24,12 +24,12 @@ public class AudioVersionRecevierModel extends HexStringRecevierModel {
 
     @Override
     String getRawData() {
-        //获取音频版版本号
-        return NewlineDeviceUtils.getAudioVersion();
+        //获取音频版型号
+        return NewlineDeviceUtils.getAudioModel();
     }
 
     @Override
     String getQueryType() {
-        return QUERY_TYPE_AUDIO_VERSION;
+        return QUERY_TYPE_AUDIO_MODEL;
     }
 }

@@ -96,6 +96,9 @@ public abstract class RecevierSerialPortModel {
             case AudioModelRecevierModel.CONTROLLING_CODE:{
                 return new AudioModelRecevierModel(hhtDeviceManager);
             }
+            case V811ScreenStatusRecevierModel.CONTROLLING_CODE:{
+                return new V811ScreenStatusRecevierModel(hhtDeviceManager);
+            }
             default:{
 
             }break;

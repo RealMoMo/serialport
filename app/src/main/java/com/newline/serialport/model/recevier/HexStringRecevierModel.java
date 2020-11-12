@@ -28,6 +28,9 @@ public abstract class HexStringRecevierModel extends RecevierSerialPortModel {
     protected static final String QUERY_TYPE_AUDIO_VERSION = "8E";
     //查询音频版型号
     protected static final String QUERY_TYPE_AUDIO_MODEL = "9A";
+    //查询屏幕状态（亮屏/息屏）
+    protected static final String QUERY_TYPE_SCREEN_STATUS = "9C";
+
 
     //1.包头格式
     private static final String PACKAGE_HEADER = "7F";

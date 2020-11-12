@@ -11,12 +11,14 @@ import android.view.KeyEvent;
 
 import com.ist.android.tv.IstEventManager;
 import com.newline.serialport.broadcast.V811MicMuteBroadcast;
+import com.newline.serialport.broadcast.V811ScreenStatusBroadcast;
 import com.newline.serialport.dao.SerialPortDAO;
 import com.newline.serialport.dao.observer.SerialPortContentObserver;
 import com.newline.serialport.model.KeyEventBean;
 import com.newline.serialport.model.PersisentStatus;
 import com.newline.serialport.model.recevier.RecevierSerialPortModel;
 import com.newline.serialport.model.recevier.SyncStatusRecevierModel;
+import com.newline.serialport.model.recevier.V811ScreenStatusRecevierModel;
 import com.newline.serialport.model.recevier.V811WakeUpRecevierModel;
 import com.newline.serialport.model.send.AndroidUpgradeProcessSendModel;
 import com.newline.serialport.model.send.AudioUpgradeResultSendModel;
@@ -37,6 +39,7 @@ import com.newline.serialport.model.send.Number7SendModel;
 import com.newline.serialport.model.send.Number8SendModel;
 import com.newline.serialport.model.send.Number9SendModel;
 import com.newline.serialport.model.send.RightSendModel;
+import com.newline.serialport.model.send.ScreenStatusSendModel;
 import com.newline.serialport.model.send.SendSerialPortModel;
 import com.newline.serialport.model.send.UpSendModel;
 import com.newline.serialport.model.send.VolumeMuteSendModel;
@@ -46,12 +49,13 @@ import com.newline.serialport.model.send.ZoomOutSendModel;
 import com.newline.serialport.pool.SerialPortModelPool;
 import com.newline.serialport.setting.HHTDeviceManager;
 import com.newline.serialport.setting.i.StandardDeviceStatusListener;
+import com.newline.serialport.utils.NewlineDeviceUtils;
 
 
 import org.jetbrains.annotations.Nullable;
 
 
-public class SerialPortService extends Service implements SerialPortContentObserver.SerialPortDAOChangeListener, StandardDeviceStatusListener, V811MicMuteBroadcast.MicStatusListener {
+public class SerialPortService extends Service implements SerialPortContentObserver.SerialPortDAOChangeListener, StandardDeviceStatusListener, V811MicMuteBroadcast.MicStatusListener, V811ScreenStatusBroadcast.ScreenStatusListener {
 
     private static String TAG = "newlinePort";
 
@@ -78,6 +82,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
     private HHTDeviceManager hhtDeviceManager;
 
     private V811MicMuteBroadcast v811MicMuteBroadcast;
+    private V811ScreenStatusBroadcast v811ScreenBroadcast;
 
     private SerialPortModelPool serialPortModelPool;
 
@@ -113,8 +118,9 @@ public class SerialPortService extends Service implements SerialPortContentObser
 
     private void justTest() {
         Log.d(TAG,"just test");
-        V811WakeUpRecevierModel wakeUpRecevierModel = new V811WakeUpRecevierModel(hhtDeviceManager,this);
-        wakeUpRecevierModel.action();
+        V811ScreenStatusRecevierModel screenStatusRecevierModel = new V811ScreenStatusRecevierModel(hhtDeviceManager);
+        screenStatusRecevierModel.action();
+        Log.d(TAG,"test retry content:  "+screenStatusRecevierModel.retryContent());
 
     }
 
@@ -135,6 +141,9 @@ public class SerialPortService extends Service implements SerialPortContentObser
     private void initV811PlatformStatusListener() {
         v811MicMuteBroadcast = new V811MicMuteBroadcast(this);
         this.registerReceiver(v811MicMuteBroadcast, v811MicMuteBroadcast.getIntentFilter());
+
+        v811ScreenBroadcast = new V811ScreenStatusBroadcast(this);
+        this.registerReceiver(v811ScreenBroadcast,v811ScreenBroadcast.getIntentFilter());
     }
 
     /**
@@ -469,6 +478,14 @@ public class SerialPortService extends Service implements SerialPortContentObser
     }
 
 
+    @Override
+    public void screenStatusChanged(boolean isSleep) {
+        Log.d(TAG,"screenStatusChanged:"+isSleep);
+        SendSerialPortModel model = new ScreenStatusSendModel(serialPortUtils, isSleep);
+        model.sendContent();
+    }
+
+
     private boolean isSelfChange() {
         if (selfChange) {
             selfChange = false;
@@ -490,12 +507,15 @@ public class SerialPortService extends Service implements SerialPortContentObser
         serialPortContentObserver.removeSerialPortContentObserver(this);
         serialPortContentObserver.release();
         unregisterReceiver(v811MicMuteBroadcast);
+        unregisterReceiver(v811ScreenBroadcast);
         serialPortModelPool.release();
         v811MicMuteBroadcast.release();
+        v811ScreenBroadcast.release();
 
         Intent intent = new Intent(this,SerialPortService.class);
         startService(intent);
     }
+
 
 
 }

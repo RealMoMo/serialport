@@ -131,6 +131,14 @@ public class NewlineDeviceUtils {
     }
 
     /**
+     * 是否息屏状态
+     * @return
+     */
+    public static boolean isSleep(){
+        return IstCommonManager.getInstance().isSystemSleep();
+    }
+
+    /**
      * 通知关机
      * @param context
      */

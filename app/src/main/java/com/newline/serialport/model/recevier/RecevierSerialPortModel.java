@@ -99,6 +99,9 @@ public abstract class RecevierSerialPortModel {
             case V811ScreenStatusRecevierModel.CONTROLLING_CODE:{
                 return new V811ScreenStatusRecevierModel(hhtDeviceManager);
             }
+            case MacAddressRecevierModel.CONTROLLING_CODE:{
+                return new MacAddressRecevierModel(hhtDeviceManager);
+            }
             default:{
 
             }break;

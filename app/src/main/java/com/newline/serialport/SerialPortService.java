@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 
@@ -49,6 +50,7 @@ import com.newline.serialport.model.send.ZoomOutSendModel;
 import com.newline.serialport.pool.SerialPortModelPool;
 import com.newline.serialport.setting.HHTDeviceManager;
 import com.newline.serialport.setting.i.StandardDeviceStatusListener;
+import com.newline.serialport.utils.NetworkUtils;
 import com.newline.serialport.utils.NewlineDeviceUtils;
 
 
@@ -117,10 +119,14 @@ public class SerialPortService extends Service implements SerialPortContentObser
     }
 
     private void justTest() {
-        Log.d(TAG,"just test");
-        V811ScreenStatusRecevierModel screenStatusRecevierModel = new V811ScreenStatusRecevierModel(hhtDeviceManager);
-        screenStatusRecevierModel.action();
-        Log.d(TAG,"test retry content:  "+screenStatusRecevierModel.retryContent());
+//        Log.d(TAG,"just test");
+//        V811ScreenStatusRecevierModel screenStatusRecevierModel = new V811ScreenStatusRecevierModel(hhtDeviceManager);
+//        screenStatusRecevierModel.action();
+//        Log.d(TAG,"test retry content:  "+screenStatusRecevierModel.retryContent());
+
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Service.TELEPHONY_SERVICE);
+        Log.d("realmo","mac address:"+ NetworkUtils.getMacAddressByEthernet());
+        Log.d("realmo","imei:"+ telephonyManager.getImei());
 
     }
 

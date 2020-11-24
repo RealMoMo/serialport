@@ -488,7 +488,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
     public void screenStatusChanged(boolean isSleep) {
         Log.d(TAG,"screenStatusChanged:"+isSleep);
         SendSerialPortModel model = new ScreenStatusSendModel(serialPortUtils, isSleep);
-        model.sendContent();
+        serialPortModelPool.addSendPortModel(model);
     }
 
 

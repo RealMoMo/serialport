@@ -28,6 +28,7 @@ import com.newline.serialport.model.send.DownSendModel;
 import com.newline.serialport.model.send.EnterSendModel;
 import com.newline.serialport.model.send.KeyPlusSendModel;
 import com.newline.serialport.model.send.LeftSendModel;
+import com.newline.serialport.model.send.LiveSendModel;
 import com.newline.serialport.model.send.MicMuteSendModel;
 import com.newline.serialport.model.send.Number0SendModel;
 import com.newline.serialport.model.send.Number1SendModel;
@@ -65,6 +66,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
     private byte[] mBuffer;
 
     private static final int MSG_WHAT_VOLUME = 0X100;
+    private static final int MSG_WHAT_LIVE_PACKGET = 0X101;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -75,6 +77,11 @@ public class SerialPortService extends Service implements SerialPortContentObser
                     serialPortModelPool.addSendPortModel(model);
                 }
                 break;
+                case MSG_WHAT_LIVE_PACKGET:{
+                    serialPortModelPool.addSendPortModel(liveSendModel);
+                    //10s间隔
+                    sendEmptyMessageDelayed(MSG_WHAT_LIVE_PACKGET,10000);
+                }break;
             }
         }
     };
@@ -94,6 +101,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
      */
     private boolean selfChange = false;
 
+    private SendSerialPortModel liveSendModel;
 
     @Nullable
     @Override
@@ -111,22 +119,15 @@ public class SerialPortService extends Service implements SerialPortContentObser
         initV811PlatformStatusListener();
 
         initPersistenceStatus();
-
+        initLivePacket();
         serialPortModelPool = SerialPortModelPool.getInstance();
 
 
         //justTest();
     }
 
-    private void justTest() {
-//        Log.d(TAG,"just test");
-//        V811ScreenStatusRecevierModel screenStatusRecevierModel = new V811ScreenStatusRecevierModel(hhtDeviceManager);
-//        screenStatusRecevierModel.action();
-//        Log.d(TAG,"test retry content:  "+screenStatusRecevierModel.retryContent());
 
-        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Service.TELEPHONY_SERVICE);
-        Log.d("realmo","mac address:"+ NetworkUtils.getMacAddressByEthernet());
-        Log.d("realmo","imei:"+ telephonyManager.getImei());
+    private void justTest() {
 
     }
 
@@ -139,6 +140,14 @@ public class SerialPortService extends Service implements SerialPortContentObser
         persisentStatus.volume = hhtDeviceManager.getVolume();
         persisentStatus.volumeMute = hhtDeviceManager.getMuteStatus();
         persisentStatus.micMute = !IstEventManager.getInstance().isMirPhoneOpen();
+    }
+
+    /**
+     * 初始化心跳数据包
+     */
+    private void initLivePacket() {
+        liveSendModel = new LiveSendModel(serialPortUtils);
+        handler.sendEmptyMessageDelayed(MSG_WHAT_LIVE_PACKGET,3000);
     }
 
     /**
@@ -184,7 +193,6 @@ public class SerialPortService extends Service implements SerialPortContentObser
                 String content = SerialPortUtils.bytesToHexString(mBuffer).toUpperCase();
                 Log.d(TAG, "receiver content:" + content);
                 RecevierSerialPortModel recevierSerialPortModel = RecevierSerialPortModel.getSerialPortModelByControllingCode(content, size, SerialPortService.this,hhtDeviceManager);
-
                 if (recevierSerialPortModel != null) {
                     selfChange = recevierSerialPortModel.changeAndroidDevice;
                     recevierSerialPortModel.action();
@@ -365,6 +373,17 @@ public class SerialPortService extends Service implements SerialPortContentObser
                 sendModel = new ZoomOutSendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
             }
             break;
+            //TODO just test new function to remove this
+            //Setting
+            case 465:{
+                Log.d(TAG,"continue live package");
+                handler.sendEmptyMessageDelayed(MSG_WHAT_LIVE_PACKGET,3000);
+            }break;
+            //菜单
+            case 467:{
+                Log.d(TAG,"stop live package");
+                handler.removeCallbacksAndMessages(null);
+            }break;
 //            case KeyEvent.KEYCODE_PLUS:{
 //                sendModel = new KeyPlusSendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
 //            }break;
@@ -436,6 +455,8 @@ public class SerialPortService extends Service implements SerialPortContentObser
 
     @Override
     public void onMuteChange(boolean mute) {
+        Log.d(TAG,"onMuteChange:"+mute);
+        Log.d(TAG,"onMuteChange isslef:"+isSelfChange());
         if (isSelfChange()) {
             persisentStatus.volumeMute = mute;
             return;
@@ -451,6 +472,8 @@ public class SerialPortService extends Service implements SerialPortContentObser
 
     @Override
     public void onVolumeChange(int value) {
+        Log.d(TAG,"onVolumeChange:"+value);
+        Log.d(TAG,"onVolumeChange isslef:"+isSelfChange());
         if (isSelfChange()) {
             persisentStatus.volume = value;
             return;

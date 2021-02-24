@@ -19,7 +19,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @describe 串口发送数据包对象缓冲池（添加发送失败重发机制）
  */
 public class SerialPortModelPool {
-    private static final String TAG = "SerialPortModelPool";
+//    private static final String TAG = "SerialPortModelPool";
+    private static final String TAG = "newlinePort";
     private static final SerialPortModelPool ourInstance = new SerialPortModelPool();
     private static final int MAX_RETRY_TIMES = 3;
     private static final int MSG_RETRY_SEND = 0X200;
@@ -62,7 +63,7 @@ public class SerialPortModelPool {
 
 
     public void addSendPortModel(SendSerialPortModel sendSerialPortModel){
-        Log.d(TAG,"add pool");
+        Log.d(TAG,"add pool:"+sendSerialPortModel.getSendContent());
         waitModelQueue.add(sendSerialPortModel);
         if(tryQueue.isEmpty()){
            startSend(waitModelQueue.poll());

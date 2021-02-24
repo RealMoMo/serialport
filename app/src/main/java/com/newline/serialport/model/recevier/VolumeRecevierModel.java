@@ -1,6 +1,7 @@
 package com.newline.serialport.model.recevier;
 
 import android.media.AudioManager;
+import android.util.Log;
 
 import com.newline.serialport.setting.HHTDeviceManager;
 
@@ -32,6 +33,8 @@ public class VolumeRecevierModel extends RecevierSerialPortModel {
 
     @Override
     public void action() {
+
+        Log.d("newlinePort","ops set volume:"+volume);
         hhtDeviceManager.get().setVolume(AudioManager.STREAM_MUSIC,volume,0);
     }
 

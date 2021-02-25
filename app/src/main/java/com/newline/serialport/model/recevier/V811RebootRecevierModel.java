@@ -20,7 +20,7 @@ public class V811RebootRecevierModel extends RecevierSerialPortModel {
 
     public V811RebootRecevierModel(HHTDeviceManager hhtDeviceManager, Context context) {
         super(hhtDeviceManager);
-        changeAndroidDevice = true;
+        //changeAndroidDevice = true;
         mContext = context;
 
     }

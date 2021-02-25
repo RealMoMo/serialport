@@ -17,6 +17,11 @@ public abstract class RecevierSerialPortModel {
     WeakReference<HHTDeviceManager> hhtDeviceManager;
 
     public boolean changeAndroidDevice = false;
+    public int changeAndroidFunctionType = -1;
+
+    public static final int VOLUME_CHANGED_FUNCTION_TYPE =  1;
+    public static final int VOLUME_MUTE_FUNCTION_TYPE =  VOLUME_CHANGED_FUNCTION_TYPE+1;
+    public static final int MIC_MUTE_FUNCTION_TYPE =  VOLUME_CHANGED_FUNCTION_TYPE+2;
 
     public RecevierSerialPortModel(HHTDeviceManager hhtDeviceManager) {
         this.hhtDeviceManager = new WeakReference(hhtDeviceManager);

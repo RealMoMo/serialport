@@ -20,7 +20,7 @@ public class V811SleepRecevierModel extends RecevierSerialPortModel {
 
     public V811SleepRecevierModel(HHTDeviceManager hhtDeviceManager, Context context) {
         super(hhtDeviceManager);
-        changeAndroidDevice = true;
+        //changeAndroidDevice = true;
         mContext = context;
 
     }

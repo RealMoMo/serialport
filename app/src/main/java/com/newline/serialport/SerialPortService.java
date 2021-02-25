@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 
@@ -19,8 +18,6 @@ import com.newline.serialport.model.KeyEventBean;
 import com.newline.serialport.model.PersisentStatus;
 import com.newline.serialport.model.recevier.RecevierSerialPortModel;
 import com.newline.serialport.model.recevier.SyncStatusRecevierModel;
-import com.newline.serialport.model.recevier.V811ScreenStatusRecevierModel;
-import com.newline.serialport.model.recevier.V811WakeUpRecevierModel;
 import com.newline.serialport.model.send.AndroidUpgradeProcessSendModel;
 import com.newline.serialport.model.send.AudioUpgradeResultSendModel;
 import com.newline.serialport.model.send.DelSendModel;
@@ -51,8 +48,6 @@ import com.newline.serialport.model.send.ZoomOutSendModel;
 import com.newline.serialport.pool.SerialPortModelPool;
 import com.newline.serialport.setting.HHTDeviceManager;
 import com.newline.serialport.setting.i.StandardDeviceStatusListener;
-import com.newline.serialport.utils.NetworkUtils;
-import com.newline.serialport.utils.NewlineDeviceUtils;
 
 
 import org.jetbrains.annotations.Nullable;
@@ -97,9 +92,11 @@ public class SerialPortService extends Service implements SerialPortContentObser
 
     private PersisentStatus persisentStatus;
     /**
-     * 是否为自己主动改变状态的标记
+     * 是否为自己主动改变Android对应功能状态的标记
      */
-    private boolean selfChange = false;
+    private boolean selfChangeVolume = false;
+    private boolean selfChangeVolumeMute = false;
+    private boolean selfChangeMicMute = false;
 
     private SendSerialPortModel liveSendModel;
 
@@ -194,7 +191,19 @@ public class SerialPortService extends Service implements SerialPortContentObser
                 Log.d(TAG, "receiver content:" + content);
                 RecevierSerialPortModel recevierSerialPortModel = RecevierSerialPortModel.getSerialPortModelByControllingCode(content, size, SerialPortService.this,hhtDeviceManager);
                 if (recevierSerialPortModel != null) {
-                    selfChange = recevierSerialPortModel.changeAndroidDevice;
+                    if(recevierSerialPortModel.changeAndroidDevice){
+                        switch (recevierSerialPortModel.changeAndroidFunctionType){
+                            case RecevierSerialPortModel.MIC_MUTE_FUNCTION_TYPE:{
+                                selfChangeMicMute = true;
+                            }break;
+                            case RecevierSerialPortModel.VOLUME_MUTE_FUNCTION_TYPE:{
+                                selfChangeVolumeMute = true;
+                            }break;
+                            case RecevierSerialPortModel.VOLUME_CHANGED_FUNCTION_TYPE:{
+                                selfChangeVolume = true;
+                            }break;
+                        }
+                    }
                     recevierSerialPortModel.action();
 
                     //回复答应
@@ -456,8 +465,8 @@ public class SerialPortService extends Service implements SerialPortContentObser
     @Override
     public void onMuteChange(boolean mute) {
         Log.d(TAG,"onMuteChange:"+mute);
-        Log.d(TAG,"onMuteChange isslef:"+isSelfChange());
-        if (isSelfChange()) {
+        Log.d(TAG,"onMuteChange isslef:"+ selfChangeVolumeMute);
+        if (isSelfChangeAndroidFunction(RecevierSerialPortModel.VOLUME_MUTE_FUNCTION_TYPE)) {
             persisentStatus.volumeMute = mute;
             return;
         }
@@ -473,8 +482,8 @@ public class SerialPortService extends Service implements SerialPortContentObser
     @Override
     public void onVolumeChange(int value) {
         Log.d(TAG,"onVolumeChange:"+value);
-        Log.d(TAG,"onVolumeChange isslef:"+isSelfChange());
-        if (isSelfChange()) {
+        Log.d(TAG,"onVolumeChange isslef:"+ selfChangeVolume);
+        if (isSelfChangeAndroidFunction(RecevierSerialPortModel.VOLUME_CHANGED_FUNCTION_TYPE)) {
             persisentStatus.volume = value;
             return;
         }
@@ -494,7 +503,7 @@ public class SerialPortService extends Service implements SerialPortContentObser
 
     @Override
     public void micMuteStatusChanged(boolean isMute) {
-        if (isSelfChange()) {
+        if (isSelfChangeAndroidFunction(RecevierSerialPortModel.MIC_MUTE_FUNCTION_TYPE)) {
             persisentStatus.micMute = isMute;
             return;
         }
@@ -515,11 +524,29 @@ public class SerialPortService extends Service implements SerialPortContentObser
     }
 
 
-    private boolean isSelfChange() {
-        if (selfChange) {
-            selfChange = false;
-            return true;
+    private boolean isSelfChangeAndroidFunction(int functionType) {
+        switch (functionType){
+            case RecevierSerialPortModel.MIC_MUTE_FUNCTION_TYPE:{
+                if(selfChangeMicMute){
+                    selfChangeMicMute = false;
+                    return true;
+                }
+
+            }
+            case RecevierSerialPortModel.VOLUME_MUTE_FUNCTION_TYPE:{
+                if(selfChangeVolumeMute){
+                    selfChangeVolumeMute = false;
+                    return true;
+                }
+            }
+            case RecevierSerialPortModel.VOLUME_CHANGED_FUNCTION_TYPE:{
+                if(selfChangeVolume){
+                    selfChangeVolume = false;
+                    return true;
+                }
+            }
         }
+
         return false;
     }
 

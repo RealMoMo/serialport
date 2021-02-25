@@ -17,6 +17,7 @@ public class VolumeUnMuteRecevierModel extends RecevierSerialPortModel {
     public VolumeUnMuteRecevierModel(HHTDeviceManager hhtDeviceManager) {
         super(hhtDeviceManager);
         changeAndroidDevice = true;
+        changeAndroidFunctionType = VOLUME_MUTE_FUNCTION_TYPE;
     }
 
     @Override

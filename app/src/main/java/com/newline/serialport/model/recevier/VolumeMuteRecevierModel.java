@@ -17,6 +17,7 @@ public class VolumeMuteRecevierModel extends RecevierSerialPortModel {
     public VolumeMuteRecevierModel(HHTDeviceManager hhtDeviceManager) {
         super(hhtDeviceManager);
         changeAndroidDevice = true;
+        changeAndroidFunctionType = VOLUME_MUTE_FUNCTION_TYPE;
 
     }
 

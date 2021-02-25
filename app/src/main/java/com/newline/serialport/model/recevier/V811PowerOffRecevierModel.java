@@ -20,7 +20,7 @@ public class V811PowerOffRecevierModel extends RecevierSerialPortModel {
 
     public V811PowerOffRecevierModel(HHTDeviceManager hhtDeviceManager, Context context) {
         super(hhtDeviceManager);
-        changeAndroidDevice = true;
+        //changeAndroidDevice = true;
         mContext = context;
 
     }

@@ -18,6 +18,7 @@ public class V811MicMuteRecevierModel extends RecevierSerialPortModel {
     public V811MicMuteRecevierModel(HHTDeviceManager hhtDeviceManager) {
         super(hhtDeviceManager);
         changeAndroidDevice = true;
+        changeAndroidFunctionType = MIC_MUTE_FUNCTION_TYPE;
     }
 
 

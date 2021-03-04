@@ -382,17 +382,6 @@ public class SerialPortService extends Service implements SerialPortContentObser
                 sendModel = new ZoomOutSendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
             }
             break;
-            //TODO just test new function to remove this
-            //Setting
-            case 465:{
-                Log.d(TAG,"continue live package");
-                handler.sendEmptyMessageDelayed(MSG_WHAT_LIVE_PACKGET,3000);
-            }break;
-            //菜单
-            case 467:{
-                Log.d(TAG,"stop live package");
-                handler.removeCallbacksAndMessages(null);
-            }break;
 //            case KeyEvent.KEYCODE_PLUS:{
 //                sendModel = new KeyPlusSendModel(serialPortUtils,SerialPortDAO.KeyInent.DOWN);
 //            }break;
